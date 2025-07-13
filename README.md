@@ -1,2 +1,2 @@
-# clay-changelog
+# scribe
 AI Powered changelog generation. 
