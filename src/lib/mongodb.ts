@@ -11,10 +11,6 @@ declare global {
 // MongoDB connection string from environment variables
 const MONGODB_URI = process.env.MONGODB_CONNECTION_STRING;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_CONNECTION_STRING environment variable inside .env');
-}
-
 // Initialize the global mongoose object for caching
 global.mongoose = global.mongoose || {
   conn: null,
@@ -26,6 +22,11 @@ global.mongoose = global.mongoose || {
  * Ensures connection reuse across multiple API route invocations
  */
 export default async function connectToDatabase(): Promise<Connection> {
+  // Check for MongoDB URI at runtime
+  if (!MONGODB_URI) {
+    throw new Error('Please define the MONGODB_CONNECTION_STRING environment variable inside .env');
+  }
+
   // Return existing connection if available
   if (global.mongoose.conn) {
     console.log('Using existing MongoDB connection');
