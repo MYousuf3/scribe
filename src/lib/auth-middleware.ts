@@ -38,7 +38,24 @@ export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
     console.log('🔍 Auth Debug: Request URL:', req.url);
     console.log('🔍 Auth Debug: Request headers cookies:', req.headers.get('cookie'));
     
-    const session = await getServerSession(authOptions) as any;
+    // For Next.js App Router, we need to create a mock request/response context for getServerSession
+    // Convert NextRequest to a format compatible with getServerSession
+    const mockRequest = {
+      headers: Object.fromEntries(req.headers.entries()),
+      cookies: req.headers.get('cookie') || '',
+    };
+    
+    const mockResponse = {
+      headers: new Headers(),
+      setHeader: () => {},
+      getHeader: () => undefined,
+    };
+    
+    const session = await getServerSession({
+      req: mockRequest as any,
+      res: mockResponse as any,
+      ...authOptions
+    }) as any;
     
     console.log('🔍 Auth Debug: Session result:', JSON.stringify(session, null, 2));
     
