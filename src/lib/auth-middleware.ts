@@ -34,7 +34,7 @@ export type AuthResult = AuthContext | UnauthenticatedContext;
  */
 export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
   try {
-    // Get session using NextAuth
+    // Get session using NextAuth - in App Router, we need to pass req and res
     const session = await getServerSession(authOptions) as any;
     
     if (!session?.user?.githubId || !session.accessToken) {
