@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
-import axios from 'axios';
+import axios, { isAxiosError } from '@/lib/axios';
 import ChangelogEntry from '../../../components/ChangelogEntry';
 import Link from 'next/link';
 import { formatProjectDate } from '../../../lib/dateUtils';
@@ -72,7 +72,7 @@ export default function ProjectChangelogPage() {
         
       } catch (err) {
         console.error('[ERROR] Failed to fetch project or changelogs:', err);
-        if (axios.isAxiosError(err) && err.response?.status === 404) {
+        if (isAxiosError(err) && err.response?.status === 404) {
           setError('Project not found');
         } else {
           setError('Failed to load project changelogs. Please try again later.');

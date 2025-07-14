@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useSession } from 'next-auth/react';
-import axios from 'axios';
+import axios, { isAxiosError } from '@/lib/axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -71,7 +71,7 @@ export default function DeveloperToolPage() {
     } catch (err) {
       console.error('[ERROR] Failed to generate changelog:', err);
       
-      if (axios.isAxiosError(err) && err.response?.data?.error) {
+      if (isAxiosError(err) && err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
         setError('An unexpected error occurred. Please try again.');
@@ -114,7 +114,7 @@ export default function DeveloperToolPage() {
     } catch (err) {
       console.error('[ERROR] Failed to publish changelog:', err);
       
-      if (axios.isAxiosError(err) && err.response?.data?.error) {
+      if (isAxiosError(err) && err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
         setError('Failed to publish changelog. Please try again.');

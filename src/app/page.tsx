@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import axios from 'axios';
+import axios from '@/lib/axios';
 import ProjectCard from '../components/ProjectCard';
 
 interface Project {

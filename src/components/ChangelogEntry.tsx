@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { formatChangelogDate } from '../lib/dateUtils';
-import axios from 'axios';
+import axios from '@/lib/axios';
 
 interface Changelog {
   _id: string;

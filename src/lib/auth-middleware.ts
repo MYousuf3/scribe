@@ -32,9 +32,10 @@ export type AuthResult = AuthContext | UnauthenticatedContext;
 /**
  * Get authentication context from request
  */
-export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function getAuthContext(_req: NextRequest): Promise<AuthResult> {
   try {
-    // Get session using NextAuth - in App Router, we need to pass req and res
+    // Get session using NextAuth - in App Router, getServerSession automatically uses request context
     const session = await getServerSession(authOptions) as any;
     
     if (!session?.user?.githubId || !session.accessToken) {
