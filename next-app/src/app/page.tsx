@@ -80,11 +80,11 @@ export default function Home() {
               <li className="flex items-center">
                 <span className="text-2xl mr-3">🎯</span>
                 Professional formatting ready for release
-              </li>
+          </li>
               <li className="flex items-center">
                 <span className="text-2xl mr-3">🔄</span>
                 Automated publishing and distribution
-              </li>
+          </li>
             </ul>
           </div>
           <div className="text-center">
@@ -108,7 +108,7 @@ export default function Home() {
             </button>
           </div>
         </div>
-      </div>
-    </main>
+        </div>
+      </main>
   );
 }
