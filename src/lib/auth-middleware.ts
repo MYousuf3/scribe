@@ -32,12 +32,21 @@ export type AuthResult = AuthContext | UnauthenticatedContext;
 /**
  * Get authentication context from request
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getAuthContext(_req: NextRequest): Promise<AuthResult> {
+export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
   try {
+    console.log('🔍 Auth Debug: Getting session from request');
+    console.log('🔍 Auth Debug: Request URL:', req.url);
+    console.log('🔍 Auth Debug: Request headers cookies:', req.headers.get('cookie'));
+    
     const session = await getServerSession(authOptions) as any;
     
+    console.log('🔍 Auth Debug: Session result:', JSON.stringify(session, null, 2));
+    
     if (!session?.user?.githubId || !session.accessToken) {
+      console.log('🔍 Auth Debug: No session or missing required fields');
+      console.log('🔍 Auth Debug: Has user?', !!session?.user);
+      console.log('🔍 Auth Debug: Has githubId?', !!session?.user?.githubId);
+      console.log('🔍 Auth Debug: Has accessToken?', !!session?.accessToken);
       return { user: null, isAuthenticated: false };
     }
 
@@ -46,9 +55,11 @@ export async function getAuthContext(_req: NextRequest): Promise<AuthResult> {
     // Find user in database
     const user = await User.findOne({ github_id: session.user.githubId });
     if (!user) {
+      console.log('🔍 Auth Debug: User not found in database for githubId:', session.user.githubId);
       return { user: null, isAuthenticated: false };
     }
 
+    console.log('🔍 Auth Debug: Authentication successful for user:', user.username);
     return {
       user: {
         id: user.id,
@@ -62,7 +73,7 @@ export async function getAuthContext(_req: NextRequest): Promise<AuthResult> {
       isAuthenticated: true,
     };
   } catch (error) {
-    console.error('Error getting auth context:', error);
+    console.error('🔍 Auth Debug: Error getting auth context:', error);
     return { user: null, isAuthenticated: false };
   }
 }
