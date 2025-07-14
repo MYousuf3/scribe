@@ -38,24 +38,43 @@ export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
     console.log('🔍 Auth Debug: Request URL:', req.url);
     console.log('🔍 Auth Debug: Request headers cookies:', req.headers.get('cookie'));
     
-    // For Next.js App Router, we need to create a mock request/response context for getServerSession
-    // Convert NextRequest to a format compatible with getServerSession
-    const mockRequest = {
-      headers: Object.fromEntries(req.headers.entries()),
-      cookies: req.headers.get('cookie') || '',
-    };
+    // Try the simpler approach first - just call getServerSession without context
+    // This should work in most cases for Next.js App Router
+    let session = await getServerSession(authOptions) as any;
     
-    const mockResponse = {
-      headers: new Headers(),
-      setHeader: () => {},
-      getHeader: () => undefined,
-    };
+    console.log('🔍 Auth Debug: Initial session result:', JSON.stringify(session, null, 2));
     
-    const session = await getServerSession({
-      req: mockRequest as any,
-      res: mockResponse as any,
-      ...authOptions
-    }) as any;
+    // If that fails, try with manual cookie parsing
+    if (!session) {
+      console.log('🔍 Auth Debug: No session found, trying manual cookie approach');
+      const cookieHeader = req.headers.get('cookie');
+      console.log('🔍 Auth Debug: Cookie header:', cookieHeader);
+      
+      if (cookieHeader) {
+        // Try to create a more compatible request object
+        const mockRequest = {
+          headers: {
+            cookie: cookieHeader,
+            ...Object.fromEntries(req.headers.entries())
+          },
+          cookies: cookieHeader,
+        };
+        
+        const mockResponse = {
+          headers: new Headers(),
+          setHeader: () => {},
+          getHeader: () => undefined,
+        };
+        
+        session = await getServerSession({
+          req: mockRequest as any,
+          res: mockResponse as any,
+          ...authOptions
+        }) as any;
+        
+        console.log('🔍 Auth Debug: Session with mock context:', JSON.stringify(session, null, 2));
+      }
+    }
     
     console.log('🔍 Auth Debug: Session result:', JSON.stringify(session, null, 2));
     
