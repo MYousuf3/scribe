@@ -1,9 +1,16 @@
+'use client';
+
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { formatChangelogDate } from '../lib/dateUtils';
+import axios from 'axios';
 
 interface Changelog {
   _id: string;
   id: string;
   project_id: string;
+  created_by?: string;
   summary_final: string;
   status: string;
   published_at: Date;
@@ -14,13 +21,43 @@ interface Changelog {
 
 interface ChangelogEntryProps {
   changelog: Changelog;
+  onDelete?: (changelogId: string) => void;
 }
 
-export default function ChangelogEntry({ changelog }: ChangelogEntryProps) {
+export default function ChangelogEntry({ changelog, onDelete }: ChangelogEntryProps) {
+  const { data: session } = useSession();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const formatCommitCount = (commitHashes: string[]) => {
     const count = commitHashes.length;
     return `${count} commit${count !== 1 ? 's' : ''}`;
+  };
+
+  // Check if current user owns this changelog
+  const isOwner = session?.user?.githubId && changelog.created_by && 
+    session.user.githubId.toString() === changelog.created_by;
+
+  const handleDelete = async () => {
+    if (!isOwner) return;
+    
+    setIsDeleting(true);
+    try {
+      await axios.delete('/api/developer/delete-changelog', {
+        data: { changelog_id: changelog.id }
+      });
+      
+      // Call the onDelete callback if provided
+      if (onDelete) {
+        onDelete(changelog.id);
+      }
+    } catch (error) {
+      console.error('Error deleting changelog:', error);
+      alert('Failed to delete changelog. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
   };
 
   // Simple markdown-like rendering for bullet points
@@ -106,9 +143,44 @@ export default function ChangelogEntry({ changelog }: ChangelogEntryProps) {
           <div className="text-2xl text-terracotta-600">𒌋</div>
         </div>
         
-        {/* Published Date */}
-        <div className="text-sm text-ink-medium font-cuneiform">
-                          {formatChangelogDate(changelog.published_at)}
+        {/* Published Date and Actions */}
+        <div className="flex items-center space-x-3">
+          <div className="text-sm text-ink-medium font-cuneiform">
+            {formatChangelogDate(changelog.published_at)}
+          </div>
+          
+          {/* Delete Button for Owners */}
+          {isOwner && (
+            <div className="relative">
+              {!showDeleteConfirm ? (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="p-1.5 text-ink-medium hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                  title="Delete Changelog"
+                  disabled={isDeleting}
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </button>
+              ) : (
+                <div className="flex items-center space-x-2 bg-red-50 border border-red-200 rounded px-2 py-1">
+                  <span className="text-xs text-red-800 font-medium">Delete?</span>
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded disabled:opacity-50"
+                  >
+                    {isDeleting ? 'Deleting...' : 'Yes'}
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="text-xs bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded"
+                  >
+                    No
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

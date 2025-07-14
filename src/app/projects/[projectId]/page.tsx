@@ -11,6 +11,7 @@ interface Changelog {
   _id: string;
   id: string;
   project_id: string;
+  created_by?: string;
   summary_final: string;
   status: string;
   published_at: Date;
@@ -83,6 +84,13 @@ export default function ProjectChangelogPage() {
 
     fetchProjectAndChangelogs();
   }, [projectId]);
+
+  // Handle changelog deletion
+  const handleChangelogDelete = (deletedChangelogId: string) => {
+    setChangelogs(prevChangelogs => 
+      prevChangelogs.filter(changelog => changelog.id !== deletedChangelogId)
+    );
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-stone-light to-clay-light p-8">
@@ -171,7 +179,11 @@ export default function ProjectChangelogPage() {
               {changelogs.length > 0 ? (
                 <div className="space-y-6">
                   {changelogs.map((changelog) => (
-                    <ChangelogEntry key={changelog._id} changelog={changelog} />
+                    <ChangelogEntry 
+                      key={changelog._id} 
+                      changelog={changelog} 
+                      onDelete={handleChangelogDelete}
+                    />
                   ))}
                 </div>
               ) : (

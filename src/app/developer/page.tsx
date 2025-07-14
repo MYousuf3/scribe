@@ -1,12 +1,22 @@
 'use client';
 
 import * as React from 'react';
+import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function DeveloperToolPage() {
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  // Redirect to sign-in if not authenticated
+  React.useEffect(() => {
+    if (status === 'loading') return; // Still loading
+    if (!session) {
+      router.push('/auth/signin');
+    }
+  }, [session, status, router]);
 
   // Form inputs
   const [projectName, setProjectName] = React.useState<string>('');
@@ -113,6 +123,23 @@ export default function DeveloperToolPage() {
       setLoading(false);
     }
   };
+
+  // Show loading state while checking authentication
+  if (status === 'loading') {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-stone-light to-clay-light p-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 animate-spin rounded-full border-2 border-ink-dark border-t-transparent mx-auto mb-4"></div>
+          <p className="text-ink-dark font-cuneiform">Checking authentication...</p>
+        </div>
+      </main>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!session) {
+    return null;
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-stone-light to-clay-light p-8">

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 import { z } from 'zod';
+import connectToDatabase from '../../../../lib/mongodb';
+import User from '../../../../models/User';
 import Project from '../../../../models/Project';
 import Changelog from '../../../../models/Changelog';
 import { fetchRecentCommitsByCount, CommitData } from '../../../../services/gitService';
 import { generateSummary } from '../../../../services/llmService';
+import { requireAuthAndRepositoryAccess } from '../../../../lib/auth-middleware';
 
 // Request validation schema
 const GenerateChangelogRequest = z.object({
@@ -33,24 +35,7 @@ interface GenerateChangelogResponse {
   commit_count: number;
 }
 
-/**
- * Connect to MongoDB database
- */
-async function connectToDatabase(): Promise<void> {
-  if (mongoose.connection.readyState === 1) {
-    return; // Already connected
-  }
 
-  const connectionString = process.env.MONGODB_CONNECTION_STRING;
-  if (!connectionString) {
-    throw new Error('MONGODB_CONNECTION_STRING environment variable is required');
-  }
-
-  await mongoose.connect(connectionString, {
-    serverSelectionTimeoutMS: 10000,
-    bufferCommands: false
-  });
-}
 
 
 
@@ -69,7 +54,7 @@ function generateVersion(): string {
 
 /**
  * POST /api/developer/generate-changelog
- * Generate AI changelog from GitHub repository
+ * Generate AI changelog from GitHub repository (Requires Authentication)
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -80,24 +65,47 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Normalize repo URL (remove trailing slash)
     const normalizedRepoUrl = repo_url.replace(/\/$/, '');
 
+    // Verify authentication and repository access
+    const { auth, repositoryAccess } = await requireAuthAndRepositoryAccess(request, normalizedRepoUrl);
+
     // Connect to database
     await connectToDatabase();
+
+    // Find or create user in database (sync with latest GitHub data)
+    const githubProfile = await (async () => {
+      // Extract GitHub profile from session
+      return {
+        id: auth.user.github_id,
+        login: auth.user.username,
+        name: auth.user.name,
+        email: auth.user.email,
+        avatar_url: auth.user.avatar_url,
+      };
+    })();
+
+    const user = await (User as any).findOrCreateFromGitHub(githubProfile, auth.user.access_token);
 
     // Check if project already exists with this repo URL
     let project = await (Project as any).findByRepoUrl(normalizedRepoUrl);
     
     if (project) {
-      // Project exists - announce and continue with changelog generation
+      // Project exists - update owner if not set
+      if (!project.owner_id) {
+        project.owner_id = user.id;
+        await project.save();
+        console.log(`Updated project ownership: ${project.name} (${project.id}) -> ${user.username}`);
+      }
       console.log(`Project already exists: ${project.name} (${project.id})`);
     } else {
-      // Create new project
+      // Create new project with owner
       project = new Project({
         name: project_name,
-        repo_url: normalizedRepoUrl
+        repo_url: normalizedRepoUrl,
+        owner_id: user.id,
       });
       
       await project.save();
-      console.log(`Created new project: ${project.name} (${project.id})`);
+      console.log(`Created new project: ${project.name} (${project.id}) owned by ${user.username}`);
     }
 
     console.log(`Fetching ${commit_count} most recent commits`);
@@ -129,6 +137,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Create new changelog as draft
     const changelog = new Changelog({
       project_id: project.id,
+      created_by: user.id,
       version: version,
       summary_ai: summaryAi,
       commit_hashes: commitHashes,
@@ -169,9 +178,32 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Handle MongoDB errors
-    if (error instanceof mongoose.Error) {
-      if (error.message.includes('duplicate key')) {
+    // Handle authentication errors
+    if (error instanceof Error && error.message.includes('Authentication required')) {
+      return NextResponse.json(
+        {
+          error: 'Authentication required',
+          details: 'Please sign in with your GitHub account to generate changelogs'
+        },
+        { status: 401 }
+      );
+    }
+
+    // Handle repository access errors
+    if (error instanceof Error && error.message.includes('Repository access required')) {
+      return NextResponse.json(
+        {
+          error: 'Repository access denied',
+          details: 'You need access to this GitHub repository to generate changelogs'
+        },
+        { status: 403 }
+      );
+    }
+
+    // Handle MongoDB errors (check for specific error properties)
+    if (error && typeof error === 'object' && 'message' in error) {
+      const errorMessage = (error as any).message;
+      if (errorMessage.includes('duplicate key')) {
         return NextResponse.json(
           {
             error: 'Repository URL already exists',
@@ -181,13 +213,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         );
       }
 
-      return NextResponse.json(
-        {
-          error: 'Database error',
-          details: 'Failed to save project or changelog data'
-        },
-        { status: 500 }
-      );
+      if (errorMessage.includes('connection') || errorMessage.includes('database')) {
+        return NextResponse.json(
+          {
+            error: 'Database error',
+            details: 'Failed to save project or changelog data'
+          },
+          { status: 500 }
+        );
+      }
     }
 
     // Handle service-specific errors

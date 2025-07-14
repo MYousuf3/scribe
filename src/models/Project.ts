@@ -6,6 +6,10 @@ export interface IProject extends Document {
   id: string; // Custom UUID field
   name: string;
   repo_url: string;
+  description?: string;
+  owner_id?: string; // References User.id - optional for backward compatibility
+  github_repo_owner: string; // GitHub username/organization
+  github_repo_name: string; // Repository name
   created_at: Date;
   updated_at: Date;
 }
@@ -41,6 +45,28 @@ const ProjectSchema = new Schema<IProject>({
     },
     index: true, // Explicit index for duplicate checking
   },
+  description: {
+    type: String,
+    trim: true,
+    maxlength: 500
+  },
+  owner_id: {
+    type: String,
+    index: true, // For ownership queries
+    sparse: true // Allows null values for backward compatibility
+  },
+  github_repo_owner: {
+    type: String,
+    required: true,
+    trim: true,
+    index: true
+  },
+  github_repo_name: {
+    type: String,
+    required: true,
+    trim: true,
+    index: true
+  },
   created_at: {
     type: Date,
     default: Date.now,
@@ -71,9 +97,19 @@ const ProjectSchema = new Schema<IProject>({
   }
 });
 
-// Pre-save middleware to update updated_at on save
+// Pre-save middleware to update updated_at and extract GitHub repo info
 ProjectSchema.pre('save', function(next) {
   this.updated_at = new Date();
+  
+  // Extract GitHub repo owner and name from repo_url
+  if (this.repo_url) {
+    const match = this.repo_url.match(/^https:\/\/github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)\/?$/);
+    if (match) {
+      this.github_repo_owner = match[1];
+      this.github_repo_name = match[2];
+    }
+  }
+  
   next();
 });
 
@@ -86,6 +122,9 @@ ProjectSchema.pre(['updateOne', 'findOneAndUpdate'], function(next) {
 // Indexes for performance optimization
 ProjectSchema.index({ name: 1 }); // For name-based searches
 ProjectSchema.index({ repo_url: 1 }, { unique: true }); // For duplicate checking
+ProjectSchema.index({ owner_id: 1 }, { sparse: true }); // For ownership queries
+ProjectSchema.index({ github_repo_owner: 1 }); // For GitHub user queries
+ProjectSchema.index({ github_repo_name: 1 }); // For repository name queries
 ProjectSchema.index({ created_at: -1 }); // For sorting by creation date
 ProjectSchema.index({ updated_at: -1 }); // For sorting by update date
 
@@ -96,6 +135,14 @@ ProjectSchema.statics.findByRepoUrl = function(repo_url: string) {
 
 ProjectSchema.statics.findByCustomId = function(id: string) {
   return this.findOne({ id });
+};
+
+ProjectSchema.statics.findByOwner = function(owner_id: string) {
+  return this.find({ owner_id });
+};
+
+ProjectSchema.statics.findByGitHubRepo = function(github_repo_owner: string, github_repo_name: string) {
+  return this.findOne({ github_repo_owner, github_repo_name });
 };
 
 // Instance methods
@@ -113,6 +160,8 @@ export default Project;
 export type CreateProjectInput = {
   name: string;
   repo_url: string;
+  description?: string;
+  owner_id?: string;
 };
 
 // Helper type for project updates

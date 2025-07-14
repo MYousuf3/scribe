@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export interface IChangelog extends Document {
   id: string; // Custom UUID field
   project_id: string; // Reference to Project.id
+  created_by?: string; // Reference to User.id - optional for backward compatibility
   version: string;
   summary_ai: string;
   summary_final?: string; // Optional - user-edited final version
@@ -34,6 +35,20 @@ const ChangelogSchema = new Schema<IChangelog>({
         return uuidRegex.test(id);
       },
       message: 'Invalid project_id UUID format'
+    }
+  },
+  created_by: {
+    type: String,
+    index: true, // Index for user-changelog relationships
+    sparse: true, // Allows null values for backward compatibility
+    validate: {
+      validator: function(id: string) {
+        if (!id) return true; // Allow null/undefined for backward compatibility
+        // Validate UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(id);
+      },
+      message: 'Invalid created_by UUID format'
     }
   },
   version: {
@@ -113,10 +128,12 @@ const ChangelogSchema = new Schema<IChangelog>({
 
 // Indexes for performance optimization
 ChangelogSchema.index({ project_id: 1 }); // For project-changelog relationships
+ChangelogSchema.index({ created_by: 1 }, { sparse: true }); // For user-changelog relationships
 ChangelogSchema.index({ published_at: -1 }); // For date-based sorting
 ChangelogSchema.index({ status: 1 }); // For filtering by status
 ChangelogSchema.index({ project_id: 1, status: 1 }); // Compound index for common queries
 ChangelogSchema.index({ project_id: 1, published_at: -1 }); // For project changelog history
+ChangelogSchema.index({ created_by: 1, status: 1 }, { sparse: true }); // For user's changelogs by status
 ChangelogSchema.index({ version: 1 }); // For version-based lookups
 
 // Static methods for the model
@@ -138,6 +155,14 @@ ChangelogSchema.statics.findPublished = function() {
 
 ChangelogSchema.statics.findDrafts = function() {
   return this.find({ status: 'draft' }).sort({ generated_at: -1 });
+};
+
+ChangelogSchema.statics.findByUser = function(created_by: string, status?: 'draft' | 'published') {
+  const query: any = { created_by };
+  if (status) {
+    query.status = status;
+  }
+  return this.find(query).sort({ published_at: -1, generated_at: -1 });
 };
 
 // Instance methods
@@ -178,6 +203,7 @@ export default Changelog;
 // Helper type for creating new changelogs
 export type CreateChangelogInput = {
   project_id: string;
+  created_by?: string; // Optional for backward compatibility
   summary_ai: string;
   commit_hashes: string[];
   version?: string; // Optional - will be auto-generated if not provided
