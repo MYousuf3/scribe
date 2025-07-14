@@ -33,6 +33,9 @@ export type AuthResult = AuthContext | UnauthenticatedContext;
  * Get authentication context from request
  */
 export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
+  console.log('🔥 AUTH MIDDLEWARE: Function called!');
+  console.log('🔥 AUTH MIDDLEWARE: Request URL:', req.url);
+  
   try {
     console.log('🔍 Auth Debug: Getting session from request');
     console.log('🔍 Auth Debug: Request URL:', req.url);
@@ -75,7 +78,7 @@ export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
         console.log('🔍 Auth Debug: Session with mock context:', JSON.stringify(session, null, 2));
       }
     }
-    
+
     console.log('🔍 Auth Debug: Session result:', JSON.stringify(session, null, 2));
     
     if (!session?.user?.githubId || !session.accessToken) {
@@ -83,6 +86,7 @@ export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
       console.log('🔍 Auth Debug: Has user?', !!session?.user);
       console.log('🔍 Auth Debug: Has githubId?', !!session?.user?.githubId);
       console.log('🔍 Auth Debug: Has accessToken?', !!session?.accessToken);
+      console.log('🔥 AUTH MIDDLEWARE: Returning unauthenticated');
       return { user: null, isAuthenticated: false };
     }
 
