@@ -20,7 +20,8 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
     const { changelog_id } = DeleteChangelogRequest.parse(body);
 
     // Verify authentication and changelog ownership
-    const { auth, changelog } = await requireAuthAndChangelogOwnership(request, changelog_id);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { auth, changelog: _changelog } = await requireAuthAndChangelogOwnership(request, changelog_id);
 
     // Connect to database
     await connectToDatabase();

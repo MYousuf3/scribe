@@ -35,8 +35,8 @@ export default function ChangelogEntry({ changelog, onDelete }: ChangelogEntryPr
   };
 
   // Check if current user owns this changelog
-  const isOwner = session?.user?.githubId && changelog.created_by && 
-    session.user.githubId.toString() === changelog.created_by;
+  const isOwner = session && (session.user as any)?.githubId && changelog.created_by && 
+    (session.user as any).githubId.toString() === changelog.created_by;
 
   const handleDelete = async () => {
     if (!isOwner) return;

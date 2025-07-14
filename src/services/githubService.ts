@@ -56,11 +56,11 @@ export class GitHubService {
 
       return {
         hasAccess: true,
-        permissions: data.permissions || {
-          admin: false,
-          maintain: false,
-          push: false,
-          pull: true, // Default to read access if permissions not available
+        permissions: {
+          admin: data.permissions?.admin || false,
+          maintain: data.permissions?.maintain || false,
+          push: data.permissions?.push || false,
+          pull: data.permissions?.pull || true, // Default to read access if permissions not available
         },
       };
     } catch (error: any) {
@@ -124,11 +124,11 @@ export class GitHubService {
           type: data.owner.type,
         },
         private: data.private,
-        permissions: data.permissions || {
-          admin: false,
-          maintain: false,
-          push: false,
-          pull: true,
+        permissions: {
+          admin: data.permissions?.admin || false,
+          maintain: data.permissions?.maintain || false,
+          push: data.permissions?.push || false,
+          pull: data.permissions?.pull || true,
         },
       };
     } catch (error) {

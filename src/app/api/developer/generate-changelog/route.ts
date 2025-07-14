@@ -66,7 +66,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const normalizedRepoUrl = repo_url.replace(/\/$/, '');
 
     // Verify authentication and repository access
-    const { auth, repositoryAccess } = await requireAuthAndRepositoryAccess(request, normalizedRepoUrl);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { auth, repositoryAccess: _repositoryAccess } = await requireAuthAndRepositoryAccess(request, normalizedRepoUrl);
 
     // Connect to database
     await connectToDatabase();

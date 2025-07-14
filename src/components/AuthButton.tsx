@@ -48,11 +48,11 @@ export default function AuthButton() {
         )}
         <div className="flex flex-col">
           <span className="text-sm font-medium">
-            {session.user?.name || session.user?.username || 'GitHub User'}
+            {session.user?.name || (session.user as any)?.username || 'GitHub User'}
           </span>
-          {session.user?.username && (
+          {(session.user as any)?.username && (
             <span className="text-xs text-amber-200">
-              @{session.user.username}
+              @{(session.user as any).username}
             </span>
           )}
         </div>
