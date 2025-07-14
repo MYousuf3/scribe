@@ -27,7 +27,7 @@ export default function Home() {
 
           {/* Feature Card 2 */}
           <div className="bg-gradient-to-br from-amber-100 to-orange-200 p-8 rounded-xl shadow-lg border-2 border-amber-300 transform hover:scale-105 transition-transform duration-300">
-            <div className="text-4xl mb-4">🤖</div>
+            <div className="text-4xl mb-4"></div>
             <h3 className="text-xl font-bold text-amber-900 mb-3">AI-Powered</h3>
             <p className="text-amber-800">
               Google Gemini AI analyzes commits and generates professional changelogs with categorized entries.
@@ -70,19 +70,19 @@ Manage Your Digital Codex
             </h2>
             <ul className="space-y-4 text-lg text-amber-800">
               <li className="flex items-center">
-                <span className="text-2xl mr-3">📚</span>
+                <span className="text-2xl mr-3"></span>
                 Track multiple projects and repositories
               </li>
               <li className="flex items-center">
-                <span className="text-2xl mr-3">⏱️</span>
+                <span className="text-2xl mr-3"></span>
                 Generate changelogs for any date range
               </li>
               <li className="flex items-center">
-                <span className="text-2xl mr-3">🎯</span>
+                <span className="text-2xl mr-3"></span>
                 Professional formatting ready for release
               </li>
               <li className="flex items-center">
-                <span className="text-2xl mr-3">•</span>
+                <span className="text-2xl mr-3"></span>
                 Automated publishing and distribution
               </li>
             </ul>
@@ -98,7 +98,7 @@ Manage Your Digital Codex
         <div className="text-center">
           <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-8 rounded-2xl shadow-xl">
             <h2 className="text-3xl font-bold mb-4">
-              Ready to Chronicle Your Code? 📜
+              Ready to Chronicle Your Code?
             </h2>
             <p className="text-xl mb-6 opacity-90">
               Transform your commit history into legendary documentation
