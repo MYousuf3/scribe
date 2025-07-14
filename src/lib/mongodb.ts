@@ -28,7 +28,7 @@ global.mongoose = global.mongoose || {
 export default async function connectToDatabase(): Promise<Connection> {
   // Return existing connection if available
   if (global.mongoose.conn) {
-    console.log('📦 Using existing MongoDB connection');
+    console.log('Using existing MongoDB connection');
     return global.mongoose.conn;
   }
 
@@ -50,14 +50,14 @@ export default async function connectToDatabase(): Promise<Connection> {
     w: 'majority' as const, // Write concern
   };
 
-  console.log('🔄 Creating new MongoDB connection...');
+      console.log('Creating new MongoDB connection...');
 
   // Create new connection promise
   global.mongoose.promise = mongoose.connect(MONGODB_URI!, options).then((mongoose) => {
-    console.log('✅ MongoDB connected successfully');
+    console.log('MongoDB connected successfully');
     return mongoose.connection;
   }).catch((error) => {
-    console.error('❌ MongoDB connection failed:', error);
+    console.error('MongoDB connection failed:', error);
     global.mongoose.promise = null; // Reset promise on failure
     throw error;
   });
@@ -140,11 +140,11 @@ export async function healthCheck(): Promise<{
 if (typeof window === 'undefined') {
   // Only run on server-side
   mongoose.connection.on('connected', () => {
-    console.log('🔗 Mongoose connected to MongoDB');
+    console.log('Mongoose connected to MongoDB');
   });
 
   mongoose.connection.on('error', (error) => {
-    console.error('❌ Mongoose connection error:', error);
+    console.error('Mongoose connection error:', error);
   });
 
   mongoose.connection.on('disconnected', () => {

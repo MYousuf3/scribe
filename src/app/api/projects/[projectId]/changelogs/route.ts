@@ -77,7 +77,7 @@ export async function GET(
     );
 
   } catch (error) {
-    console.error('❌ Error fetching project changelogs:', error);
+    console.error('Error fetching project changelogs:', error);
 
     // Handle specific MongoDB connection errors
     if (error instanceof Error && error.message.includes('connection')) {

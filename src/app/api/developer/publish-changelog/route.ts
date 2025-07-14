@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     );
     
   } catch (error) {
-    console.error('❌ Error in publish-changelog API:', error);
+    console.error('Error in publish-changelog API:', error);
     
     // Handle specific error types
     if (error instanceof SyntaxError) {

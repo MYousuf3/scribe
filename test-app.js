@@ -2,7 +2,7 @@
 require('dotenv').config({ path: '.env' });
 
 async function testApp() {
-  console.log('🧪 Testing Scribe Application Components...\n');
+  console.log('Testing Scribe Application Components...\n');
 
   // Test 1: Environment Variables Check
   console.log('1. Environment Variables:');
@@ -17,15 +17,15 @@ async function testApp() {
   for (const { name, required } of envVars) {
     const value = process.env[name];
     if (value) {
-      console.log(`   ✅ ${name}: Set (${value.slice(0, 10)}...)`);
+      console.log(`   [OK] ${name}: Set (${value.slice(0, 10)}...)`);
     } else if (required) {
-      console.log(`   ❌ ${name}: Missing (required)`);
+              console.log(`   [ERROR] ${name}: Missing (required)`);
       envOk = false;
     } else {
-      console.log(`   ⚠️  ${name}: Not set (optional)`);
+              console.log(`   [WARN] ${name}: Not set (optional)`);
     }
   }
-  console.log(`   Environment: ${envOk ? '✅ OK' : '❌ Issues detected'}\n`);
+      console.log(`   Environment: ${envOk ? '[OK]' : '[ERROR] Issues detected'}\n`);
 
   // Test 2: MongoDB Connection
   console.log('2. Database Connection:');
@@ -38,13 +38,13 @@ async function testApp() {
       bufferCommands: false
     });
     
-    console.log(`   ✅ MongoDB connected: ${mongoose.connection.readyState === 1 ? 'Ready' : 'Not ready'}`);
-    console.log(`   📊 Database: ${mongoose.connection.db.databaseName}`);
+          console.log(`   [OK] MongoDB connected: ${mongoose.connection.readyState === 1 ? 'Ready' : 'Not ready'}`);
+          console.log(`   [INFO] Database: ${mongoose.connection.db.databaseName}`);
     
     await mongoose.disconnect();
-    console.log('   ✅ MongoDB disconnected cleanly');
+          console.log('   [OK] MongoDB disconnected cleanly');
   } catch (error) {
-    console.log(`   ❌ MongoDB connection failed: ${error.message}`);
+          console.log(`   [ERROR] MongoDB connection failed: ${error.message}`);
   }
   console.log('');
 
@@ -63,10 +63,10 @@ async function testApp() {
     for (const url of testUrls) {
       const isValid = isValidRepoUrl(url);
       const provider = getRepoProvider(url);
-      console.log(`   ${isValid ? '✅' : '❌'} ${url.slice(0, 40)}... → ${provider || 'invalid'}`);
+      console.log(`   ${isValid ? '[OK]' : '[ERROR]'} ${url.slice(0, 40)}... → ${provider || 'invalid'}`);
     }
   } catch (error) {
-    console.log(`   ❌ Git service test failed: ${error.message}`);
+          console.log(`   [ERROR] Git service test failed: ${error.message}`);
   }
   console.log('');
 
@@ -77,12 +77,12 @@ async function testApp() {
     
     const validation = validateLLMConfiguration();
     if (validation.isValid) {
-      console.log('   ✅ Gemini AI configuration valid');
+      console.log('   [OK] Gemini AI configuration valid');
     } else {
-      console.log(`   ❌ Configuration issue: ${validation.error}`);
+              console.log(`   [ERROR] Configuration issue: ${validation.error}`);
     }
   } catch (error) {
-    console.log(`   ❌ LLM service test failed: ${error.message}`);
+          console.log(`   [ERROR] LLM service test failed: ${error.message}`);
   }
   console.log('');
 
@@ -95,23 +95,23 @@ async function testApp() {
     
     if (response.ok) {
       const contentType = response.headers.get('content-type');
-      console.log(`   ✅ Server responding: ${response.status} ${response.statusText}`);
-      console.log(`   📄 Content-Type: ${contentType}`);
+              console.log(`   [OK] Server responding: ${response.status} ${response.statusText}`);
+              console.log(`   [INFO] Content-Type: ${contentType}`);
       
       if (contentType?.includes('text/html')) {
         const html = await response.text();
         const hasCustomContent = html.includes('Scribe') || html.includes('clay-tablet');
-        console.log(`   ${hasCustomContent ? '✅' : '⚠️'} Custom content: ${hasCustomContent ? 'Found' : 'Using default template'}`);
+        console.log(`   ${hasCustomContent ? '[OK]' : '[WARN]'} Custom content: ${hasCustomContent ? 'Found' : 'Using default template'}`);
       }
     } else {
-      console.log(`   ❌ Server error: ${response.status} ${response.statusText}`);
+              console.log(`   [ERROR] Server error: ${response.status} ${response.statusText}`);
     }
   } catch (error) {
-    console.log(`   ❌ Server not accessible: ${error.message}`);
+          console.log(`   [ERROR] Server not accessible: ${error.message}`);
   }
   console.log('');
 
-  console.log('🎉 Application testing completed!');
+  console.log('Application testing completed!');
 }
 
 // Run the test

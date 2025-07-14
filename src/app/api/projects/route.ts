@@ -30,7 +30,7 @@ export async function GET() {
     );
 
   } catch (error) {
-    console.error('❌ Error fetching projects:', error);
+    console.error('Error fetching projects:', error);
 
     // Handle specific MongoDB connection errors
     if (error instanceof Error && error.message.includes('connection')) {

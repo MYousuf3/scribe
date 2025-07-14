@@ -18,7 +18,7 @@ export default function Home() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {/* Feature Card 1 */}
           <div className="bg-gradient-to-br from-amber-100 to-orange-200 p-8 rounded-xl shadow-lg border-2 border-amber-300 transform hover:scale-105 transition-transform duration-300">
-            <div className="text-4xl mb-4">🏺</div>
+            
             <h3 className="text-xl font-bold text-amber-900 mb-3">Git Integration</h3>
             <p className="text-amber-800">
               Connect GitHub and GitLab repositories. Fetch commits automatically with intelligent parsing.
@@ -36,7 +36,7 @@ export default function Home() {
 
           {/* Feature Card 3 */}
           <div className="bg-gradient-to-br from-amber-100 to-orange-200 p-8 rounded-xl shadow-lg border-2 border-amber-300 transform hover:scale-105 transition-transform duration-300">
-            <div className="text-4xl mb-4">📋</div>
+            
             <h3 className="text-xl font-bold text-amber-900 mb-3">Smart Categories</h3>
             <p className="text-amber-800">
               Automatically categorizes changes into Features, Bug Fixes, Improvements, and Documentation.
@@ -56,7 +56,7 @@ export default function Home() {
                 Scribe captures the evolution of your codebase with unparalleled precision and wisdom.
               </p>
               <div className="text-2xl text-amber-700">
-                🪶✨📖✨🏛️
+  Scribe
               </div>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
           <div>
             <h2 className="text-3xl font-bold text-amber-900 mb-6">
-              🏛️ Manage Your Digital Codex
+Manage Your Digital Codex
             </h2>
             <ul className="space-y-4 text-lg text-amber-800">
               <li className="flex items-center">
@@ -82,16 +82,16 @@ export default function Home() {
                 Professional formatting ready for release
               </li>
               <li className="flex items-center">
-                <span className="text-2xl mr-3">🔄</span>
+                <span className="text-2xl mr-3">•</span>
                 Automated publishing and distribution
               </li>
             </ul>
           </div>
-          <div className="text-center">
-            <div className="text-8xl md:text-9xl opacity-30 text-amber-600">
-              🏺
+                      <div className="text-center">
+              <div className="text-8xl md:text-9xl opacity-30 text-amber-600 font-serif">
+                Ψ
+              </div>
             </div>
-          </div>
         </div>
 
         {/* CTA Section */}
@@ -104,7 +104,7 @@ export default function Home() {
               Transform your commit history into legendary documentation
             </p>
             <button className="bg-white text-amber-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-amber-50 transform hover:scale-105 transition-all duration-300 shadow-lg">
-              🚀 Start Your Journey
+Start Your Journey
             </button>
           </div>
         </div>
