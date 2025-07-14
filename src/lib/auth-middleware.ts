@@ -97,12 +97,7 @@ export async function checkProjectOwnership(
   try {
     await connectToDatabase();
     
-    const project = await Project.findOne({
-      $or: [
-        { id: projectId },
-        { _id: projectId }
-      ]
-    });
+    const project = await Project.findOne({ id: projectId });
 
     if (!project) {
       return {
@@ -128,11 +123,11 @@ export async function checkProjectOwnership(
 }
 
 /**
- * Check if user owns a changelog
+ * Check if user owns a changelog (based on GitHub repository ownership)
  */
 export async function checkChangelogOwnership(
   changelogId: string,
-  userId: string
+  userUsername: string
 ): Promise<{
   isOwner: boolean;
   changelog?: any;
@@ -141,12 +136,7 @@ export async function checkChangelogOwnership(
   try {
     await connectToDatabase();
     
-    const changelog = await Changelog.findOne({
-      $or: [
-        { id: changelogId },
-        { _id: changelogId }
-      ]
-    });
+    const changelog = await Changelog.findOne({ id: changelogId });
 
     if (!changelog) {
       return {
@@ -155,8 +145,18 @@ export async function checkChangelogOwnership(
       };
     }
 
-    // Check if user is the creator
-    const isOwner = changelog.created_by === userId;
+    // Find the project that this changelog belongs to
+    const project = await Project.findOne({ id: changelog.project_id });
+    
+    if (!project) {
+      return {
+        isOwner: false,
+        error: 'Project not found for this changelog',
+      };
+    }
+
+    // Check if user owns the GitHub repository
+    const isOwner = project.github_repo_owner === userUsername;
 
     return {
       isOwner,
@@ -217,9 +217,9 @@ export async function requireProjectOwnership(
  */
 export async function requireChangelogOwnership(
   changelogId: string,
-  userId: string
+  userUsername: string
 ): Promise<any> {
-  const ownership = await checkChangelogOwnership(changelogId, userId);
+  const ownership = await checkChangelogOwnership(changelogId, userUsername);
   
   if (!ownership.isOwner) {
     throw new Error(ownership.error || 'Access denied: Changelog ownership required');
@@ -269,7 +269,7 @@ export async function requireAuthAndChangelogOwnership(
   changelog: any;
 }> {
   const auth = await requireAuth(req);
-  const changelog = await requireChangelogOwnership(changelogId, auth.user.id);
+  const changelog = await requireChangelogOwnership(changelogId, auth.user.username);
   
   return { auth, changelog };
 }

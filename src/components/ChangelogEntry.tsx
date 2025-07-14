@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { TrashIcon } from '@heroicons/react/24/outline';
 import { formatChangelogDate } from '../lib/dateUtils';
 import axios from '@/lib/axios';
 
@@ -19,12 +18,25 @@ interface Changelog {
   version: string;
 }
 
+interface Project {
+  _id: string;
+  id: string;
+  name: string;
+  description?: string;
+  repository_url: string;
+  github_repo_owner?: string;
+  github_repo_name?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 interface ChangelogEntryProps {
   changelog: Changelog;
+  project?: Project;
   onDelete?: (changelogId: string) => void;
 }
 
-export default function ChangelogEntry({ changelog, onDelete }: ChangelogEntryProps) {
+export default function ChangelogEntry({ changelog, project, onDelete }: ChangelogEntryProps) {
   const { data: session } = useSession();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -34,9 +46,10 @@ export default function ChangelogEntry({ changelog, onDelete }: ChangelogEntryPr
     return `${count} commit${count !== 1 ? 's' : ''}`;
   };
 
-  // Check if current user owns this changelog
-  const isOwner = session && (session.user as any)?.githubId && changelog.created_by && 
-    (session.user as any).githubId.toString() === changelog.created_by;
+  // Check if current user owns the GitHub repository that this changelog belongs to
+  const isOwner = session && project && project.github_repo_owner && 
+    (session.user as any)?.username && 
+    (session.user as any).username === project.github_repo_owner;
 
   const handleDelete = async () => {
     if (!isOwner) return;
@@ -155,11 +168,11 @@ export default function ChangelogEntry({ changelog, onDelete }: ChangelogEntryPr
               {!showDeleteConfirm ? (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="p-1.5 text-ink-medium hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                  className="px-3 py-1 text-sm text-ink-medium hover:text-red-600 hover:bg-red-50 rounded transition-colors font-cuneiform"
                   title="Delete Changelog"
                   disabled={isDeleting}
                 >
-                  <TrashIcon className="h-4 w-4" />
+                  remove
                 </button>
               ) : (
                 <div className="flex items-center space-x-2 bg-red-50 border border-red-200 rounded px-2 py-1">

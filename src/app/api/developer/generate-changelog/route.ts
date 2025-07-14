@@ -88,21 +88,56 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // Check if project already exists with this repo URL
     let project = await (Project as any).findByRepoUrl(normalizedRepoUrl);
+    console.log(`🔍 Project lookup result:`, project ? {
+      id: project.id,
+      name: project.name,
+      repo_url: project.repo_url,
+      github_repo_owner: project.github_repo_owner,
+      github_repo_name: project.github_repo_name,
+      owner_id: project.owner_id
+    } : 'No existing project found');
     
     if (project) {
       // Project exists - update owner if not set
       if (!project.owner_id) {
         project.owner_id = user.id;
-        await project.save();
-        console.log(`Updated project ownership: ${project.name} (${project.id}) -> ${user.username}`);
       }
+      
+      // Update missing GitHub fields for existing projects (backward compatibility)
+      if (!project.github_repo_owner || !project.github_repo_name) {
+        const match = normalizedRepoUrl.match(/^https:\/\/github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)\/?$/);
+        if (match) {
+          project.github_repo_owner = match[1];
+          project.github_repo_name = match[2];
+          console.log(`Updated project GitHub fields: ${project.name} -> ${match[1]}/${match[2]}`);
+        }
+      }
+      
+      await project.save();
       console.log(`Project already exists: ${project.name} (${project.id})`);
     } else {
-      // Create new project with owner
+      // Extract GitHub owner and repo name from URL
+      const match = normalizedRepoUrl.match(/^https:\/\/github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)\/?$/);
+      if (!match) {
+        return NextResponse.json(
+          {
+            error: 'Invalid GitHub repository URL format',
+            details: 'URL must be in format: https://github.com/owner/repository'
+          },
+          { status: 400 }
+        );
+      }
+      
+      const github_repo_owner = match[1];
+      const github_repo_name = match[2];
+      
+      // Create new project with owner and GitHub info
       project = new Project({
         name: project_name,
         repo_url: normalizedRepoUrl,
         owner_id: user.id,
+        github_repo_owner,
+        github_repo_name,
       });
       
       await project.save();

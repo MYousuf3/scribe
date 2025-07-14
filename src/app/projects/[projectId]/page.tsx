@@ -26,6 +26,8 @@ interface Project {
   name: string;
   description?: string;
   repository_url: string;
+  github_repo_owner?: string;
+  github_repo_name?: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -182,6 +184,7 @@ export default function ProjectChangelogPage() {
                     <ChangelogEntry 
                       key={changelog._id} 
                       changelog={changelog} 
+                      project={project}
                       onDelete={handleChangelogDelete}
                     />
                   ))}

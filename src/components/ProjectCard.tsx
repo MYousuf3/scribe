@@ -7,6 +7,8 @@ interface Project {
   name: string;
   description?: string;
   repository_url: string;
+  github_repo_owner?: string;
+  github_repo_name?: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -49,6 +51,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <p className="text-sm text-ink-medium font-mono truncate">
             {formatRepoUrl(project.repository_url)}
           </p>
+          {project.github_repo_owner && (
+            <p className="text-xs text-ink-medium mt-1">
+              Owner: <span className="font-semibold">{project.github_repo_owner}</span>
+            </p>
+          )}
         </div>
 
         {/* Project description */}
