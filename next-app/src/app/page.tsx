@@ -1,103 +1,114 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <header className="text-center mb-16">
+          <div className="inline-block bg-gradient-to-r from-amber-800 to-orange-700 text-transparent bg-clip-text">
+            <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-wider">
+              📜 SCRIBE
+            </h1>
+          </div>
+          <p className="text-xl md:text-2xl text-amber-800 font-medium max-w-3xl mx-auto leading-relaxed">
+            Ancient wisdom meets modern development. Generate intelligent changelogs from your git commits using AI.
+          </p>
+        </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {/* Feature Card 1 */}
+          <div className="bg-gradient-to-br from-amber-100 to-orange-200 p-8 rounded-xl shadow-lg border-2 border-amber-300 transform hover:scale-105 transition-transform duration-300">
+            <div className="text-4xl mb-4">🏺</div>
+            <h3 className="text-xl font-bold text-amber-900 mb-3">Git Integration</h3>
+            <p className="text-amber-800">
+              Connect GitHub and GitLab repositories. Fetch commits automatically with intelligent parsing.
+            </p>
+          </div>
+
+          {/* Feature Card 2 */}
+          <div className="bg-gradient-to-br from-amber-100 to-orange-200 p-8 rounded-xl shadow-lg border-2 border-amber-300 transform hover:scale-105 transition-transform duration-300">
+            <div className="text-4xl mb-4">🤖</div>
+            <h3 className="text-xl font-bold text-amber-900 mb-3">AI-Powered</h3>
+            <p className="text-amber-800">
+              Google Gemini AI analyzes commits and generates professional changelogs with categorized entries.
+            </p>
+          </div>
+
+          {/* Feature Card 3 */}
+          <div className="bg-gradient-to-br from-amber-100 to-orange-200 p-8 rounded-xl shadow-lg border-2 border-amber-300 transform hover:scale-105 transition-transform duration-300">
+            <div className="text-4xl mb-4">📋</div>
+            <h3 className="text-xl font-bold text-amber-900 mb-3">Smart Categories</h3>
+            <p className="text-amber-800">
+              Automatically categorizes changes into Features, Bug Fixes, Improvements, and Documentation.
+            </p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Clay Tablet Section */}
+        <div className="text-center mb-16">
+          <div className="inline-block bg-gradient-to-br from-yellow-600 to-amber-700 p-12 rounded-3xl shadow-2xl border-4 border-amber-600 transform rotate-1">
+            <div className="bg-gradient-to-br from-amber-200 to-orange-300 p-8 rounded-2xl shadow-inner border-2 border-amber-400 transform -rotate-1">
+              <h2 className="text-3xl font-bold text-amber-900 mb-6">
+                ⚱️ Ancient Technology, Modern Results
+              </h2>
+              <p className="text-lg text-amber-800 mb-6 max-w-2xl mx-auto leading-relaxed">
+                Like ancient scribes who meticulously recorded the chronicles of their time, 
+                Scribe captures the evolution of your codebase with unparalleled precision and wisdom.
+              </p>
+              <div className="text-2xl text-amber-700">
+                🪶✨📖✨🏛️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Project Management Section */}
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+          <div>
+            <h2 className="text-3xl font-bold text-amber-900 mb-6">
+              🏛️ Manage Your Digital Codex
+            </h2>
+            <ul className="space-y-4 text-lg text-amber-800">
+              <li className="flex items-center">
+                <span className="text-2xl mr-3">📚</span>
+                Track multiple projects and repositories
+              </li>
+              <li className="flex items-center">
+                <span className="text-2xl mr-3">⏱️</span>
+                Generate changelogs for any date range
+              </li>
+              <li className="flex items-center">
+                <span className="text-2xl mr-3">🎯</span>
+                Professional formatting ready for release
+              </li>
+              <li className="flex items-center">
+                <span className="text-2xl mr-3">🔄</span>
+                Automated publishing and distribution
+              </li>
+            </ul>
+          </div>
+          <div className="text-center">
+            <div className="text-8xl md:text-9xl opacity-30 text-amber-600">
+              🏺
+            </div>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center">
+          <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-8 rounded-2xl shadow-xl">
+            <h2 className="text-3xl font-bold mb-4">
+              Ready to Chronicle Your Code? 📜
+            </h2>
+            <p className="text-xl mb-6 opacity-90">
+              Transform your commit history into legendary documentation
+            </p>
+            <button className="bg-white text-amber-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-amber-50 transform hover:scale-105 transition-all duration-300 shadow-lg">
+              🚀 Start Your Journey
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
