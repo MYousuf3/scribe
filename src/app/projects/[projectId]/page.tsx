@@ -18,6 +18,10 @@ interface Changelog {
   generated_at: Date;
   commit_hashes: string[];
   version: string;
+  from_commit?: string;
+  to_commit?: string;
+  created_at: Date;
+  content: string;
 }
 
 interface Project {
@@ -39,7 +43,6 @@ export default function ProjectChangelogPage() {
   const [changelogs, setChangelogs] = React.useState<Changelog[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string>('');
-  const [projectName, setProjectName] = React.useState<string>('');
   const [project, setProject] = React.useState<Project | null>(null);
 
   React.useEffect(() => {
@@ -60,7 +63,6 @@ export default function ProjectChangelogPage() {
         const currentProject = allProjects.find((p: Project) => p.id === projectId || p._id === projectId);
         
         if (currentProject) {
-          setProjectName(currentProject.name);
           setProject(currentProject);
         } else {
           setError('Project not found');

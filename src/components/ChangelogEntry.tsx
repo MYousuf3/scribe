@@ -43,12 +43,6 @@ interface ChangelogEntryProps {
 export default function ChangelogEntry({ changelog, project, onDelete }: ChangelogEntryProps) {
   const { data: session } = useSession();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  const formatCommitCount = (commitHashes: string[]) => {
-    const count = commitHashes.length;
-    return `${count} commit${count !== 1 ? 's' : ''}`;
-  };
 
   // Check if current user owns the GitHub repository that this changelog belongs to
   const isOwner = session && project && project.github_repo_owner && 
@@ -73,68 +67,7 @@ export default function ChangelogEntry({ changelog, project, onDelete }: Changel
       alert('Failed to delete changelog. Please try again.');
     } finally {
       setIsDeleting(false);
-      setShowDeleteConfirm(false);
     }
-  };
-
-  // Simple markdown-like rendering for bullet points
-  const renderMarkdownContent = (content: string) => {
-    return content
-      .split('\n')
-      .map((line, index) => {
-        const trimmedLine = line.trim();
-        
-        // Handle bullet points (- or * at start of line)
-        if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-          const bulletContent = trimmedLine.substring(2).trim();
-          return (
-            <li key={index} className="text-primary_green leading-relaxed mb-1">
-              {bulletContent}
-            </li>
-          );
-        }
-        
-        // Handle numbered lists (1. 2. etc.)
-        if (/^\d+\.\s/.test(trimmedLine)) {
-          const listContent = trimmedLine.replace(/^\d+\.\s/, '').trim();
-          return (
-            <li key={index} className="text-primary_green leading-relaxed mb-1 list-decimal">
-              {listContent}
-            </li>
-          );
-        }
-        
-        // Handle headers (## or ###)
-        if (trimmedLine.startsWith('## ')) {
-          const headerContent = trimmedLine.substring(3).trim();
-          return (
-            <h3 key={index} className="text-lg font-bold text-primary_green mt-4 mb-2 font-cuneiform">
-              {headerContent}
-            </h3>
-          );
-        }
-        
-        if (trimmedLine.startsWith('### ')) {
-          const headerContent = trimmedLine.substring(4).trim();
-          return (
-            <h4 key={index} className="text-base font-semibold text-primary_green mt-3 mb-1 font-cuneiform">
-              {headerContent}
-            </h4>
-          );
-        }
-        
-        // Regular paragraph
-        if (trimmedLine) {
-          return (
-            <p key={index} className="text-primary_green leading-relaxed mb-2">
-              {trimmedLine}
-            </p>
-          );
-        }
-        
-        // Empty line
-        return <br key={index} />;
-      });
   };
 
   return (

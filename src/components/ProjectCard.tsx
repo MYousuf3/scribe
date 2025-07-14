@@ -18,14 +18,6 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
-  const formatRepoUrl = (url: string) => {
-    try {
-      const urlObj = new URL(url);
-      return urlObj.hostname + urlObj.pathname;
-    } catch {
-      return url;
-    }
-  };
 
   return (
     <Link href={`/projects/${project.id}`}>

@@ -54,10 +54,10 @@ function ErrorContent() {
         <div className="bg-cream p-8 rounded-lg border-2 border-clay_brown shadow-lg text-center">
           <div className="text-6xl mb-4 text-accent_red">⚠</div>
           <h2 className="text-2xl font-bold text-dark_brown mb-4 font-serif">
-            Authentication Error
+            {getErrorTitle(error)}
           </h2>
           <p className="text-clay_brown mb-6 font-sans">
-            {error ? `Error: ${error}` : 'There was a problem signing you in.'}
+            {getErrorMessage(error)}
           </p>
           <div className="space-y-3">
             <Link

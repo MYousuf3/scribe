@@ -30,7 +30,6 @@ export default function DeveloperToolPage() {
   const [changelogId, setChangelogId] = React.useState<string>('');
   const [projectId, setProjectId] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [message, setMessage] = React.useState<string>('');
   const [error, setError] = React.useState<string>('');
 
   const handleGenerate = async (e: React.FormEvent) => {
@@ -39,7 +38,6 @@ export default function DeveloperToolPage() {
     // Reset states
     setLoading(true);
     setError('');
-    setMessage('');
     setFinalSummary('');
     setChangelogId('');
     setProjectId('');
@@ -52,8 +50,6 @@ export default function DeveloperToolPage() {
     }
 
     try {
-      setMessage('Generating changelog...');
-      
       const response = await axios.post('/api/developer/generate-changelog', {
         project_name: projectName.trim(),
         repo_url: repoUrl.trim(),
@@ -64,7 +60,6 @@ export default function DeveloperToolPage() {
         setFinalSummary(response.data.summary_final || response.data.ai_summary || '');
         setChangelogId(response.data.changelog_id || '');
         setProjectId(response.data.project_id || '');
-        setMessage('Changelog generated successfully!');
       } else {
         setError(response.data.error || 'Failed to generate changelog');
       }
@@ -90,7 +85,6 @@ export default function DeveloperToolPage() {
     try {
       setLoading(true);
       setError('');
-      setMessage('Publishing changelog...');
 
       const response = await axios.post('/api/developer/publish-changelog', {
         changelog_id: changelogId,
@@ -98,8 +92,6 @@ export default function DeveloperToolPage() {
       });
 
       if (response.data.success) {
-        setMessage('Changelog published successfully! Redirecting...');
-        
         // Redirect to project page after a brief delay
         setTimeout(() => {
           if (projectId) {
