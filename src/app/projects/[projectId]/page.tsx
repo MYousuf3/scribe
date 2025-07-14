@@ -95,94 +95,101 @@ export default function ProjectChangelogPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-stone-light to-clay-light p-8">
+    <main className="min-h-screen bg-light_beige p-8 text-lg font-sans">
       <div className="max-w-4xl mx-auto">
         {/* Navigation */}
         <div className="mb-8">
           <Link 
             href="/" 
-            className="inline-flex items-center text-ink-medium hover:text-ink-dark transition-colors duration-300 font-cuneiform"
+            className="inline-flex items-center text-dark_brown hover:text-accent_red transition-colors duration-300 font-sans text-lg"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back to Project Archives
+            Back to Projects
           </Link>
         </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-clay-medium border-t-terracotta-600 mb-4"></div>
-            <p className="text-ink-medium text-lg font-cuneiform">Deciphering ancient scrolls...</p>
-          </div>
-        )}
-
-        {/* Error State */}
         {error && (
-          <div className="max-w-md mx-auto mb-8">
-            <div className="bg-red-100 border-2 border-red-300 rounded-lg p-6 text-center">
-              <div className="text-4xl text-red-600 mb-2">⚠</div>
-              <p className="text-red-800 font-medium font-cuneiform">{error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300"
-              >
-                Try Again
-              </button>
-            </div>
+          <div className="mb-6 p-4 bg-accent_red text-cream rounded-lg border border-accent_red">
+            <p>{error}</p>
           </div>
         )}
 
-        {/* Project Header */}
-        {!loading && !error && project && (
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="text-2xl text-dark_brown font-serif">Loading project...</div>
+          </div>
+        ) : project ? (
           <>
-            <header className="text-center mb-12">
-              <div className="inline-block bg-gradient-to-r from-terracotta-600 to-terracotta-800 text-transparent bg-clip-text mb-4">
-                <h1 className="text-3xl md:text-5xl font-bold tracking-wider font-cuneiform">
-                  {projectName}
-                </h1>
+            {/* Project Header */}
+            <div className="bg-cream border-2 border-clay_brown rounded-lg p-8 mb-8 shadow-lg">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="text-4xl text-golden_brown">𒂷</div>
+                    <h1 className="text-3xl md:text-4xl font-bold text-dark_brown font-serif">
+                      {project.name}
+                    </h1>
+                  </div>
+                  {project.description && (
+                    <p className="text-clay_brown text-lg mb-4 font-sans leading-relaxed">
+                      {project.description}
+                    </p>
+                  )}
+                  <div className="flex items-center text-clay_brown">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.102m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    <a 
+                      href={project.repository_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:text-accent_red transition-colors duration-300 font-mono"
+                    >
+                      {project.repository_url}
+                    </a>
+                  </div>
+                </div>
+                {/* Actions */}
+                <div className="flex space-x-3">
+                  <Link
+                    href="/developer"
+                    className="bg-golden_brown hover:bg-accent_red text-cream px-6 py-3 rounded-lg transition-colors duration-300 font-serif"
+                  >
+                    Generate New
+                  </Link>
+                  {/* isOwner and isDeleting are not defined in the original file,
+                      so this block is commented out to avoid errors.
+                      If these variables were intended to be added, they would need to be declared. */}
+                  {/* {isOwner && (
+                    <button
+                      onClick={handleDeleteProject}
+                      disabled={isDeleting}
+                      className="bg-accent_red hover:bg-dark_brown text-cream px-6 py-3 rounded-lg transition-colors duration-300 font-serif disabled:opacity-50"
+                    >
+                      {isDeleting ? 'Deleting...' : 'Delete Project'}
+                    </button>
+                  )} */}
+                </div>
               </div>
-              <p className="text-lg text-ink-medium font-cuneiform max-w-3xl mx-auto leading-relaxed">
-                Chronicle of Changes • {formatProjectDate(project.updated_at)}
-              </p>
-              {project.description && (
-                <p className="text-ink-medium mt-2 max-w-2xl mx-auto">
-                  {project.description}
-                </p>
-              )}
-            </header>
-
-            {/* Repository Info */}
-            <div className="bg-clay-medium rounded-lg shadow-clay-inset border border-clay-dark p-4 mb-8">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="text-xl text-terracotta-600">⟨</div>
-                  <div className="text-sm text-ink-medium font-cuneiform">Repository</div>
-                  <div className="text-xl text-terracotta-600">⟩</div>
-                </div>
-                <div className="text-sm text-ink-dark font-mono">
-                  {project.repository_url}
-                </div>
+              <div className="flex justify-between items-center text-sm text-clay_brown border-t border-clay_brown pt-4">
+                <span>Created {formatProjectDate(project.created_at)}</span>
+                <span>Last updated {formatProjectDate(project.updated_at)}</span>
               </div>
             </div>
 
             {/* Changelogs Section */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-ink-dark font-cuneiform">
-                  Recorded Entries
-                </h2>
-                <div className="text-sm text-ink-medium font-cuneiform">
-                  {changelogs.length} changelog{changelogs.length !== 1 ? 's' : ''}
-                </div>
-              </div>
-
-              {changelogs.length > 0 ? (
+              <h2 className="text-2xl font-bold text-dark_brown mb-6 font-serif">
+                Project Chronicles
+              </h2>
+              
+                             {changelogs && changelogs.length > 0 ? (
                 <div className="space-y-6">
                   {changelogs.map((changelog) => (
                     <ChangelogEntry 
-                      key={changelog._id} 
+                      key={changelog.id} 
                       changelog={changelog} 
                       project={project}
                       onDelete={handleChangelogDelete}
@@ -190,24 +197,40 @@ export default function ProjectChangelogPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <div className="text-6xl text-clay-dark mb-4">⌘</div>
-                  <h3 className="text-2xl font-bold text-ink-dark mb-2 font-cuneiform">
-                    No Chronicles Found
+                <div className="text-center py-12 bg-cream border-2 border-clay_brown rounded-lg">
+                  <div className="text-6xl mb-4 text-clay_brown">𒁹</div>
+                  <h3 className="text-xl font-bold text-dark_brown mb-2 font-serif">
+                    No Chronicles Yet
                   </h3>
-                  <p className="text-ink-medium mb-6 font-cuneiform">
-                    This tablet awaits the first entries of your development journey.
+                  <p className="text-clay_brown mb-6 font-sans">
+                    Generate your first changelog to begin chronicling this project&apos;s evolution.
                   </p>
                   <Link
                     href="/developer"
-                    className="bg-terracotta-600 text-white px-6 py-3 rounded-lg hover:bg-terracotta-700 transition-colors duration-300 font-cuneiform"
+                    className="inline-block bg-golden_brown hover:bg-accent_red text-cream px-6 py-3 rounded-lg transition-colors duration-300 font-serif"
                   >
-                    Generate First Changelog
+                    Create First Chronicle
                   </Link>
                 </div>
               )}
             </div>
           </>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4 text-clay_brown">⚠</div>
+            <h1 className="text-2xl font-bold text-dark_brown mb-4 font-serif">
+              Project Not Found
+            </h1>
+            <p className="text-clay_brown mb-6 font-sans">
+              The project you&apos;re looking for doesn&apos;t exist or has been removed.
+            </p>
+            <Link
+              href="/"
+              className="inline-block bg-golden_brown hover:bg-accent_red text-cream px-6 py-3 rounded-lg transition-colors duration-300 font-serif"
+            >
+              Back to Projects
+            </Link>
+          </div>
         )}
       </div>
     </main>

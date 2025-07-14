@@ -29,49 +29,31 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <Link href={`/projects/${project.id}`}>
-      <div className="bg-clay-medium rounded-lg shadow-clay-outset border-b-2 border-clay-dark font-cuneiform p-6 transform hover:scale-105 transition-all duration-300 cursor-pointer hover:shadow-clay-deep">
+      <div className="bg-clay_brown rounded-lg border-b-2 border-accent_red font-cuneiform p-6 transform hover:scale-105 transition-all duration-300 cursor-pointer hover:bg-golden_brown">
         {/* Clay tablet header */}
         <div className="flex items-center justify-between mb-4">
-          <div className="text-3xl text-ink-dark">Ψ</div>
-          <div className="text-sm text-ink-medium font-medium">
+          <div className="text-3xl text-dark_brown">Ψ</div>
+          <div className="text-sm text-cream font-medium">
             Updated {formatProjectDate(project.updated_at)}
           </div>
         </div>
-
         {/* Project name */}
-        <h3 className="text-xl font-bold text-ink-dark mb-3 leading-tight">
+        <h3 className="text-xl font-bold text-dark_brown mb-2 font-serif">
           {project.name}
         </h3>
-
-        {/* Repository URL */}
-        <div className="mb-4">
-          <div className="text-xs text-ink-medium bg-clay-light px-2 py-1 rounded border border-clay-dark inline-block mb-2">
-            Repository
-          </div>
-          <p className="text-sm text-ink-medium font-mono truncate">
-            {formatRepoUrl(project.repository_url)}
-          </p>
-          {project.github_repo_owner && (
-            <p className="text-xs text-ink-medium mt-1">
-              Owner: <span className="font-semibold">{project.github_repo_owner}</span>
-            </p>
-          )}
-        </div>
-
-        {/* Project description */}
+        {/* Description */}
         {project.description && (
-          <p className="text-ink-medium mb-4 text-sm leading-relaxed line-clamp-3">
+          <p className="text-cream text-sm mb-4 line-clamp-3 font-sans">
             {project.description}
           </p>
         )}
-
-        {/* Updated date */}
-        <div className="mt-4 pt-4 border-t border-clay-dark">
-          <div className="flex justify-between items-center">
-            <div className="text-xs text-ink-medium">
-              Created {formatProjectDate(project.created_at)}
-            </div>
-            <div className="w-12 h-1 bg-gradient-to-r from-terracotta-400 to-terracotta-600 rounded-full"></div>
+        {/* Repository URL */}
+        <div className="flex items-center text-xs text-cream">
+          <div className="flex items-center space-x-1">
+            <div className="w-2 h-2 bg-accent_red rounded-full"></div>
+            <span className="truncate font-mono">
+              {project.repository_url?.replace('https://github.com/', '') || 'Repository'}
+            </span>
           </div>
         </div>
       </div>

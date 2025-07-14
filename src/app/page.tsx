@@ -3,6 +3,8 @@
 import * as React from 'react';
 import axios from '@/lib/axios';
 import ProjectCard from '../components/ProjectCard';
+import { Sparkles, Github, ScrollText } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface Project {
   _id: string;
@@ -24,12 +26,11 @@ export default function ProjectListPage() {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        setError('');
         const response = await axios.get('/api/projects');
         setProjects(response.data.projects || []);
-      } catch (err) {
-        console.error('[ERROR] Failed to fetch projects:', err);
-        setError('Failed to load projects. Please try again later.');
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        setError('Failed to load projects');
       } finally {
         setLoading(false);
       }
@@ -45,107 +46,163 @@ export default function ProjectListPage() {
   );
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <header className="text-center mb-12">
-          <div className="inline-block bg-gradient-to-r from-amber-800 to-orange-700 text-transparent bg-clip-text">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-wider">
-              Project Archives
-            </h1>
-          </div>
-          <p className="text-lg md:text-xl text-amber-800 font-medium max-w-3xl mx-auto leading-relaxed">
-            Explore your digital codex of projects. Each clay tablet represents a chronicle of development history.
-          </p>
-        </header>
+    <main className="min-h-screen bg-light_beige relative overflow-x-hidden">
+      {/* Single Animated Cuneiform Pattern Background for entire page */}
+      <svg className="fixed inset-0 w-full h-full opacity-10 z-0 pointer-events-none animate-pulse-slow" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <pattern id="cuneiform" patternUnits="userSpaceOnUse" width="60" height="60">
+          <text x="0" y="40" fontSize="48" fontFamily="serif" fill="#b08150" opacity="0.7">𒀭</text>
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#cuneiform)" />
+      </svg>
+      {/* Hero Section */}
+      <section className="relative py-24 flex flex-col items-center justify-center text-center bg-transparent z-10">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-6xl md:text-8xl font-bold text-dark_brown mb-6 font-serif"
+        >
+          𒂷 Scribe
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-xl md:text-2xl text-dark_brown mb-8 max-w-3xl font-serif"
+        >
+          Chronicle of Changes • Ancient wisdom for modern repositories
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="flex flex-col sm:flex-row gap-6 items-center"
+        >
+          <a
+            href="/developer"
+            className="inline-flex items-center px-8 py-4 bg-golden_brown text-cream text-lg font-semibold rounded-lg hover:bg-accent_red transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            <Sparkles className="mr-2 h-5 w-5" />
+            Generate Changelog
+          </a>
+          <a
+            href="https://github.com"
+            className="inline-flex items-center px-8 py-4 bg-transparent border-2 border-dark_brown text-dark_brown text-lg font-semibold rounded-lg hover:bg-dark_brown hover:text-cream transition-all duration-300 transform hover:scale-105"
+          >
+            <Github className="mr-2 h-5 w-5" />
+            View on GitHub
+          </a>
+        </motion.div>
+      </section>
 
-        {/* Search Input */}
-        <div className="max-w-md mx-auto mb-12">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search projects..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border-2 border-amber-300 bg-amber-50 text-amber-900 placeholder-amber-600 focus:outline-none focus:border-amber-500 focus:bg-white transition-all duration-300"
-            />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+      {/* Search and Gallery Section */}
+      <section className="relative py-16 px-4 z-10">
+        <div className="max-w-7xl mx-auto">
+          {/* Search Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mb-12 flex justify-center"
+          >
+            <div className="relative w-full max-w-2xl">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ScrollText className="h-5 w-5 text-clay_brown" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search repositories and chronicles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="block w-full pl-10 pr-3 py-4 border-2 border-clay_brown rounded-lg focus:ring-2 focus:ring-golden_brown focus:border-golden_brown bg-cream text-dark_brown placeholder-clay_brown text-lg font-serif"
+              />
             </div>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-amber-300 border-t-amber-600 mb-4"></div>
-            <p className="text-amber-700 text-lg">Loading ancient scrolls...</p>
-          </div>
-        )}
-
-        {/* Error State */}
-        {error && (
-          <div className="max-w-md mx-auto mb-8">
-            <div className="bg-red-100 border-2 border-red-300 rounded-xl p-6 text-center">
-              <div className="text-4xl text-red-600 mb-2">⚠️</div>
-              <p className="text-red-800 font-medium">{error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300"
-              >
-                Try Again
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Projects Grid */}
-        {!loading && !error && (
-          <>
-            {/* Results Summary */}
-            <div className="text-center mb-8">
-                             <p className="text-amber-700 font-medium">
-                 {searchTerm ? (
-                   <>Found {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''} matching &quot;{searchTerm}&quot;</>
-                 ) : (
-                   <>Displaying {projects.length} project{projects.length !== 1 ? 's' : ''}</>
-                 )}
-               </p>
-            </div>
-
-            {filteredProjects.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredProjects.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
-                ))}
+          {/* Projects Gallery */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            {loading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="text-2xl text-dark_brown font-serif">
+                  Loading repositories...
+                </div>
+              </div>
+            ) : error ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="text-2xl text-dark_brown font-serif">
+                  {error}
+                </div>
+              </div>
+            ) : filteredProjects.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="text-6xl mb-4 text-clay_brown">𒁹</div>
+                <div className="text-2xl text-dark_brown font-serif mb-4">
+                  No repositories found
+                </div>
+                <div className="text-lg text-dark_brown font-serif">
+                  {searchTerm ? 'Try adjusting your search terms' : 'Start by adding your first repository'}
+                </div>
               </div>
             ) : (
-              <div className="text-center py-12">
-                <div className="text-6xl text-amber-400 mb-4">Ψ</div>
-                <h3 className="text-2xl font-bold text-amber-800 mb-2">
-                  {searchTerm ? 'No Matching Scrolls Found' : 'No Projects Found'}
-                </h3>
-                <p className="text-amber-600 mb-6">
-                  {searchTerm 
-                    ? 'Try adjusting your search terms to find relevant projects.'
-                    : 'Create your first project to begin chronicling your development journey.'
-                  }
-                </p>
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm('')}
-                    className="bg-amber-600 text-white px-6 py-3 rounded-xl hover:bg-amber-700 transition-colors duration-300"
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {filteredProjects.map((project, index) => (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 * index }}
                   >
-                    Clear Search
-                  </button>
-                )}
+                    <ProjectCard project={project} />
+                  </motion.div>
+                ))}
               </div>
             )}
-          </>
-        )}
-      </div>
+          </motion.div>
+
+          {/* Call to Action */}
+          {!loading && !error && filteredProjects.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.0 }}
+              className="text-center mt-16"
+            >
+              <a
+                href="/developer"
+                className="inline-flex items-center px-8 py-4 bg-golden_brown text-cream text-lg font-semibold rounded-lg hover:bg-accent_red transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                <Sparkles className="mr-2 h-5 w-5" />
+                Create New Chronicle
+              </a>
+            </motion.div>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative py-12 border-t-2 border-clay_brown bg-light_beige z-10">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="text-4xl mb-4 text-dark_brown">𒀭</div>
+          <p className="text-dark_brown font-serif text-lg mb-4">
+            Preserve your code&apos;s legacy with the wisdom of ancient scribes
+          </p>
+          <div className="flex justify-center space-x-8">
+            <a href="#" className="text-dark_brown hover:text-accent_red transition-colors font-serif">
+              Documentation
+            </a>
+            <a href="#" className="text-dark_brown hover:text-accent_red transition-colors font-serif">
+              Support
+            </a>
+            <a href="#" className="text-dark_brown hover:text-accent_red transition-colors font-serif">
+              Community
+            </a>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

@@ -37,73 +37,42 @@ function ErrorContent() {
   };
 
   return (
-    <div className="min-h-screen bg-clay-light flex items-center justify-center px-4">
+    <div className="min-h-screen bg-light_beige flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <h1 className="text-4xl font-bold text-ink-dark font-cuneiform mb-2">
+            <h1 className="text-4xl font-bold text-dark_brown font-cuneiform mb-2">
               𒂷 Scribe
             </h1>
           </Link>
-          <p className="text-ink-medium font-cuneiform text-lg">
+          <p className="text-clay_brown font-cuneiform text-lg">
             Chronicle of Changes
           </p>
         </div>
-
         {/* Error Card */}
-        <div className="bg-clay-medium p-8 rounded-lg border-2 border-clay-dark shadow-lg">
-          <div className="text-center">
-            {/* Error Icon */}
-            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-
-            <h2 className="text-2xl font-bold text-ink-dark font-cuneiform mb-4">
-              {getErrorTitle(error)}
-            </h2>
-            
-            <p className="text-ink-medium mb-6">
-              {getErrorMessage(error)}
-            </p>
-
-            {error && (
-              <div className="bg-clay-light p-3 rounded border border-clay-dark mb-6">
-                <p className="text-sm text-ink-medium font-mono">
-                  Error Code: {error}
-                </p>
-              </div>
-            )}
-
-            <div className="space-y-3">
-              <Link 
-                href="/auth/signin"
-                className="block w-full bg-ink-dark text-clay-light font-medium py-3 px-4 rounded 
-                         hover:bg-ink-medium transition-colors duration-200 
-                         border-2 border-ink-dark hover:border-ink-medium"
-              >
-                Try Again
-              </Link>
-              
-              <Link 
-                href="/"
-                className="block w-full bg-clay-light text-ink-dark font-medium py-3 px-4 rounded 
-                         hover:bg-clay-dark hover:text-clay-light transition-colors duration-200 
-                         border-2 border-ink-dark"
-              >
-                Return to Home
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Help Text */}
-        <div className="text-center mt-6 text-sm text-ink-medium">
-          <p>
-            If this error persists, please check that your GitHub account has proper access to the repository.
+        <div className="bg-cream p-8 rounded-lg border-2 border-clay_brown shadow-lg text-center">
+          <div className="text-6xl mb-4 text-accent_red">⚠</div>
+          <h2 className="text-2xl font-bold text-dark_brown mb-4 font-serif">
+            Authentication Error
+          </h2>
+          <p className="text-clay_brown mb-6 font-sans">
+            {error ? `Error: ${error}` : 'There was a problem signing you in.'}
           </p>
+          <div className="space-y-3">
+            <Link
+              href="/auth/signin"
+              className="block w-full bg-golden_brown hover:bg-accent_red text-cream font-medium py-3 px-4 rounded-lg transition-colors duration-300"
+            >
+              Try Again
+            </Link>
+            <Link
+              href="/"
+              className="block w-full bg-transparent border-2 border-clay_brown text-dark_brown hover:bg-clay_brown hover:text-cream font-medium py-3 px-4 rounded-lg transition-colors duration-300"
+            >
+              Return Home
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -113,10 +82,10 @@ function ErrorContent() {
 export default function AuthError() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-clay-light flex items-center justify-center px-4">
+      <div className="min-h-screen bg-body_dark flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ink-dark mx-auto"></div>
-          <p className="mt-4 text-ink-medium">Loading...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dark_accent mx-auto"></div>
+          <p className="mt-4 text-body_light">Loading...</p>
         </div>
       </div>
     }>

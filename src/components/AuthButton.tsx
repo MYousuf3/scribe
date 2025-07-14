@@ -10,8 +10,8 @@ export default function AuthButton() {
   // Loading state
   if (status === 'loading') {
     return (
-      <div className="flex items-center space-x-2 text-white">
-        <div className="w-6 h-6 animate-spin rounded-full border-2 border-amber-200 border-t-transparent"></div>
+      <div className="flex items-center space-x-2 text-cream">
+        <div className="w-6 h-6 animate-spin rounded-full border-2 border-golden_brown border-t-transparent"></div>
         <span className="text-sm">Loading...</span>
       </div>
     );
@@ -22,10 +22,9 @@ export default function AuthButton() {
     return (
       <button
         onClick={() => signIn('github', { callbackUrl: '/developer' })}
-        className="flex items-center space-x-2 text-white hover:text-amber-200 transition-colors px-3 py-2 rounded-md text-sm font-medium border border-amber-600 hover:border-amber-400"
+        className="bg-golden_brown hover:bg-accent_red text-cream px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
       >
-        <ArrowRightOnRectangleIcon className="h-5 w-5" />
-        <span>Sign In</span>
+        Sign In
       </button>
     );
   }
@@ -34,24 +33,24 @@ export default function AuthButton() {
   return (
     <div className="flex items-center space-x-4">
       {/* User Profile */}
-      <div className="flex items-center space-x-2 text-white">
+      <div className="flex items-center space-x-2 text-cream">
         {session.user?.image ? (
           <Image
             src={session.user.image}
             alt={session.user?.name || 'User'}
-            width={24}
-            height={24}
-            className="rounded-full border border-amber-600"
+            width={32}
+            height={32}
+            className="rounded-full border-2 border-golden_brown"
           />
         ) : (
-          <UserIcon className="h-6 w-6 p-1 bg-amber-700 rounded-full" />
+          <UserIcon className="h-8 w-8 p-1 bg-clay_brown rounded-full text-cream" />
         )}
         <div className="flex flex-col">
           <span className="text-sm font-medium">
             {session.user?.name || (session.user as any)?.username || 'GitHub User'}
           </span>
           {(session.user as any)?.username && (
-            <span className="text-xs text-amber-200">
+            <span className="text-xs text-golden_brown">
               @{(session.user as any).username}
             </span>
           )}
@@ -61,11 +60,10 @@ export default function AuthButton() {
       {/* Sign Out Button */}
       <button
         onClick={() => signOut({ callbackUrl: '/' })}
-        className="flex items-center space-x-2 text-white hover:text-amber-200 transition-colors px-3 py-2 rounded-md text-sm font-medium"
+        className="bg-accent_red hover:bg-golden_brown text-cream px-4 py-2 rounded-lg transition-colors duration-300 font-medium"
         title="Sign Out"
       >
-        <ArrowLeftOnRectangleIcon className="h-5 w-5" />
-        <span className="hidden sm:inline">Sign Out</span>
+        <span>Sign Out</span>
       </button>
     </div>
   );

@@ -21,7 +21,7 @@ export default function DeveloperToolPage() {
   // Form inputs
   const [projectName, setProjectName] = React.useState<string>('');
   const [repoUrl, setRepoUrl] = React.useState<string>('');
-  const [commitCount, setCommitCount] = React.useState<number>(10);
+  const [numCommits, setNumCommits] = React.useState<number>(10);
   
   // Generated changelog content
   const [finalSummary, setFinalSummary] = React.useState<string>('');
@@ -57,7 +57,7 @@ export default function DeveloperToolPage() {
       const response = await axios.post('/api/developer/generate-changelog', {
         project_name: projectName.trim(),
         repo_url: repoUrl.trim(),
-        commit_count: commitCount,
+        commit_count: numCommits,
       });
 
       if (response.data.success) {
@@ -127,10 +127,10 @@ export default function DeveloperToolPage() {
   // Show loading state while checking authentication
   if (status === 'loading') {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-stone-light to-clay-light p-8 flex items-center justify-center">
+      <main className="min-h-screen bg-body_dark flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 animate-spin rounded-full border-2 border-ink-dark border-t-transparent mx-auto mb-4"></div>
-          <p className="text-ink-dark font-cuneiform">Checking authentication...</p>
+          <div className="w-8 h-8 animate-spin rounded-full border-2 border-dark_accent border-t-transparent mx-auto mb-4"></div>
+          <p className="text-dark_accent font-cuneiform">Checking authentication...</p>
         </div>
       </main>
     );
@@ -142,183 +142,137 @@ export default function DeveloperToolPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-stone-light to-clay-light p-8">
+    <main className="min-h-screen bg-light_beige p-8 text-lg font-sans">
       <div className="max-w-4xl mx-auto">
         {/* Navigation */}
         <div className="mb-8">
           <Link 
             href="/" 
-            className="inline-flex items-center text-ink-medium hover:text-ink-dark transition-colors duration-300 font-cuneiform"
+            className="inline-flex items-center text-dark_brown hover:text-accent_red transition-colors duration-300 font-sans text-lg"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back to Project Archives
+            Back to Projects
           </Link>
         </div>
 
-        {/* Header */}
-        <header className="text-center mb-12">
-          <div className="inline-block bg-gradient-to-r from-terracotta-600 to-terracotta-800 text-transparent bg-clip-text mb-4">
-            <h1 className="text-3xl md:text-5xl font-bold tracking-wider font-cuneiform">
-              Scribe&apos;s Workshop
-            </h1>
-          </div>
-          <p className="text-lg text-ink-medium font-cuneiform max-w-3xl mx-auto leading-relaxed">
-            Generate intelligent changelogs from your git commits using ancient wisdom and modern AI
+        {/* Page Header */}
+        <div className="text-center mb-12">
+          <div className="text-6xl mb-4 text-dark_brown">𒂷</div>
+          <h1 className="text-4xl md:text-5xl font-bold text-dark_brown mb-4 font-serif">
+            Developer Chronicles
+          </h1>
+          <p className="text-xl text-clay_brown font-serif max-w-2xl mx-auto">
+            Transform your repository into ancient wisdom with AI-powered changelog generation
           </p>
-        </header>
+        </div>
 
-        {/* Form Section */}
-        <div className="bg-clay-medium border-2 border-clay-dark rounded-lg shadow-clay-outset p-8 mb-8">
-          <div className="flex items-center mb-6">
-            <div className="text-3xl text-terracotta-600 mr-3">𒀭</div>
-            <h2 className="text-2xl font-bold text-ink-dark font-cuneiform">
-              Generate New Chronicle
-            </h2>
-            <div className="text-3xl text-terracotta-600 ml-3">𒌋</div>
-          </div>
+        {/* Main Form */}
+        <div className="bg-cream border-2 border-clay_brown rounded-lg p-8 mb-8 shadow-lg">
+                      <form onSubmit={handleGenerate} className="space-y-6">
+              {/* Project Name */}
+              <div>
+                <label htmlFor="projectName" className="block text-lg font-medium text-dark_brown mb-3 font-serif">
+                  Project Name
+                </label>
+                <input
+                  type="text"
+                  id="projectName"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder="My Awesome Project"
+                  className="w-full px-4 py-4 text-lg border-2 border-clay_brown rounded-lg focus:ring-2 focus:ring-golden_brown focus:border-golden_brown bg-light_beige text-dark_brown placeholder-clay_brown font-sans"
+                  required
+                />
+              </div>
 
-          <form onSubmit={handleGenerate} className="space-y-6">
-            {/* Project Name */}
-            <div>
-              <label className="block text-sm font-medium text-ink-dark font-cuneiform mb-2">
-                Project Name
-              </label>
-              <input
-                type="text"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder="Enter your project name"
-                className="w-full px-4 py-3 rounded-lg border border-clay-dark bg-clay-light text-ink-dark placeholder-ink-medium focus:outline-none focus:border-terracotta-500 focus:bg-stone-light transition-all duration-300 font-cuneiform"
-                disabled={loading}
-              />
-            </div>
+              {/* Repository URL Input */}
+              <div>
+                <label htmlFor="repoUrl" className="block text-lg font-medium text-dark_brown mb-3 font-serif">
+                  Repository URL
+                </label>
+                <input
+                  type="url"
+                  id="repoUrl"
+                  value={repoUrl}
+                  onChange={(e) => setRepoUrl(e.target.value)}
+                  placeholder="https://github.com/username/repository"
+                  className="w-full px-4 py-4 text-lg border-2 border-clay_brown rounded-lg focus:ring-2 focus:ring-golden_brown focus:border-golden_brown bg-light_beige text-dark_brown placeholder-clay_brown font-sans"
+                  required
+                />
+              </div>
 
-            {/* Repository URL */}
-            <div>
-              <label className="block text-sm font-medium text-ink-dark font-cuneiform mb-2">
-                Repository URL
-              </label>
-              <input
-                type="url"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                placeholder="https://github.com/username/repository"
-                className="w-full px-4 py-3 rounded-lg border border-clay-dark bg-clay-light text-ink-dark placeholder-ink-medium focus:outline-none focus:border-terracotta-500 focus:bg-stone-light transition-all duration-300 font-cuneiform"
-                disabled={loading}
-              />
-            </div>
+              {/* Number of Commits */}
+              <div>
+                <label htmlFor="numCommits" className="block text-lg font-medium text-dark_brown mb-3 font-serif">
+                  Number of Commits (1-100)
+                </label>
+                <input
+                  type="number"
+                  id="numCommits"
+                  value={numCommits}
+                  onChange={(e) => setNumCommits(Number(e.target.value))}
+                  min={1}
+                  max={100}
+                  className="w-full px-4 py-4 text-lg border-2 border-clay_brown rounded-lg focus:ring-2 focus:ring-golden_brown focus:border-golden_brown bg-light_beige text-dark_brown placeholder-clay_brown font-sans"
+                />
+                <p className="text-sm text-clay_brown mt-2 font-sans">
+                  How many recent commits to summarize.
+                </p>
+              </div>
 
-            {/* Commit Range (Optional) */}
-            <div>
-              <label className="block text-sm font-medium text-ink-dark font-cuneiform mb-2">
-                Number of Commits <span className="text-ink-medium">(1-100)</span>
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={commitCount}
-                onChange={(e) => setCommitCount(parseInt(e.target.value, 10) || 10)}
-                placeholder="10"
-                className="w-full px-4 py-3 rounded-lg border border-clay-dark bg-clay-light text-ink-dark placeholder-ink-medium focus:outline-none focus:border-terracotta-500 focus:bg-stone-light transition-all duration-300 font-cuneiform"
-                disabled={loading}
-              />
-              <p className="text-xs text-ink-medium mt-1 font-cuneiform">
-                𒀀 Each commit will become its own changelog entry
-              </p>
-            </div>
+            {/* Error Display */}
+            {error && (
+              <div className="p-4 bg-accent_red text-cream rounded-lg border-2 border-accent_red">
+                <p className="font-medium">{error}</p>
+              </div>
+            )}
 
-            {/* Generate Button */}
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                disabled={loading || !projectName.trim() || !repoUrl.trim()}
-                className="bg-terracotta-600 text-white px-8 py-3 rounded-lg hover:bg-terracotta-700 disabled:bg-clay-dark disabled:cursor-not-allowed transition-colors duration-300 font-cuneiform font-medium flex items-center space-x-2"
-              >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    <span>Deciphering Commits...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>𒊹</span>
-                    <span>Generate Changelog</span>
-                    <span>𒊹</span>
-                  </>
-                )}
-              </button>
-            </div>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-golden_brown hover:bg-accent_red disabled:bg-clay_brown text-cream font-bold py-4 px-6 rounded-lg transition-colors duration-300 text-lg font-serif disabled:cursor-not-allowed"
+            >
+              {loading ? 'Generating Chronicle...' : 'Generate Changelog'}
+            </button>
           </form>
         </div>
 
-        {/* Status Messages */}
-        {message && (
-          <div className="bg-terracotta-100 border border-terracotta-300 rounded-lg p-4 mb-6">
-            <p className="text-terracotta-800 font-cuneiform text-center">{message}</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-100 border border-red-300 rounded-lg p-4 mb-6">
-            <p className="text-red-800 font-cuneiform text-center">{error}</p>
-          </div>
-        )}
-
-        {/* Editable Changelog Content */}
-        {finalSummary && (
-          <div className="bg-clay-light border-2 border-clay-dark rounded-lg shadow-clay-inset p-8 mb-8">
-            <div className="flex items-center mb-6">
-              <div className="text-3xl text-terracotta-600 mr-3">𒈾</div>
-              <h3 className="text-xl font-bold text-ink-dark font-cuneiform">
-                Generated Changelog (Editable)
-              </h3>
-            </div>
-            <textarea
-              value={finalSummary}
-              onChange={(e) => setFinalSummary(e.target.value)}
-              rows={12}
-              className="w-full px-4 py-3 rounded-lg border border-clay-dark bg-stone-light text-ink-dark font-mono text-sm resize-vertical focus:outline-none focus:border-terracotta-500 transition-all duration-300"
-              placeholder="Edit your changelog content here..."
-              disabled={loading}
-            />
-            
-            {/* Publish Button */}
-            {changelogId && (
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={handlePublish}
-                  disabled={loading || !finalSummary.trim()}
-                  className="bg-terracotta-600 text-white px-8 py-3 rounded-lg hover:bg-terracotta-700 disabled:bg-clay-dark disabled:cursor-not-allowed transition-colors duration-300 font-cuneiform font-medium flex items-center space-x-2"
-                >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                      <span>Publishing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>𒀭</span>
-                      <span>Publish Chronicle</span>
-                      <span>𒀭</span>
-                    </>
-                  )}
-                </button>
+                  {/* Editable Changelog Content */}
+          {finalSummary && (
+            <div className="bg-cream border-2 border-clay_brown rounded-lg p-8 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-dark_brown font-serif">
+                  Generated Chronicle (Editable)
+                </h2>
+                <div className="text-3xl text-golden_brown">𒀭</div>
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="text-center mt-12">
-          <div className="text-4xl text-clay-dark mb-4">Ψ</div>
-          <p className="text-ink-medium font-cuneiform">
-            Ancient scribes chronicled the great deeds of kings.<br/>
-            Modern developers chronicle the evolution of code.
-          </p>
-        </div>
+              
+              <textarea
+                value={finalSummary}
+                onChange={(e) => setFinalSummary(e.target.value)}
+                rows={12}
+                className="w-full px-4 py-4 rounded-lg border-2 border-clay_brown bg-light_beige text-dark_brown font-mono text-lg resize-vertical focus:ring-2 focus:ring-golden_brown focus:border-golden_brown"
+                placeholder="Edit your changelog content here..."
+                disabled={loading}
+              />
+              
+              {/* Publish Button */}
+              {changelogId && (
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={handlePublish}
+                    disabled={loading || !finalSummary.trim()}
+                    className="bg-golden_brown hover:bg-accent_red disabled:bg-clay_brown text-cream font-bold px-8 py-4 rounded-lg transition-colors duration-300 text-lg font-serif disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Publishing...' : 'Publish Chronicle'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
       </div>
     </main>
   );

@@ -1,17 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-clay-light: #D4B896;
-  --color-clay-medium: #B8956A;
-  --color-clay-dark: #8B6F3A;
-  --color-terracotta: #E8845C;
-  --color-ink-dark: #2C1810;
-  --color-ink-medium: #4A3023;
-  --color-stone-light: #F5F1E8;
-}
-
 body {
   font-family: 'Inter', system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.01em;
+  font-weight: 700;
 }

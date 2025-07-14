@@ -16,6 +16,10 @@ interface Changelog {
   generated_at: Date;
   commit_hashes: string[];
   version: string;
+  from_commit?: string;
+  to_commit?: string;
+  created_at: Date;
+  content: string;
 }
 
 interface Project {
@@ -84,7 +88,7 @@ export default function ChangelogEntry({ changelog, project, onDelete }: Changel
         if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
           const bulletContent = trimmedLine.substring(2).trim();
           return (
-            <li key={index} className="text-ink-dark leading-relaxed mb-1">
+            <li key={index} className="text-primary_green leading-relaxed mb-1">
               {bulletContent}
             </li>
           );
@@ -94,7 +98,7 @@ export default function ChangelogEntry({ changelog, project, onDelete }: Changel
         if (/^\d+\.\s/.test(trimmedLine)) {
           const listContent = trimmedLine.replace(/^\d+\.\s/, '').trim();
           return (
-            <li key={index} className="text-ink-dark leading-relaxed mb-1 list-decimal">
+            <li key={index} className="text-primary_green leading-relaxed mb-1 list-decimal">
               {listContent}
             </li>
           );
@@ -104,7 +108,7 @@ export default function ChangelogEntry({ changelog, project, onDelete }: Changel
         if (trimmedLine.startsWith('## ')) {
           const headerContent = trimmedLine.substring(3).trim();
           return (
-            <h3 key={index} className="text-lg font-bold text-ink-dark mt-4 mb-2 font-cuneiform">
+            <h3 key={index} className="text-lg font-bold text-primary_green mt-4 mb-2 font-cuneiform">
               {headerContent}
             </h3>
           );
@@ -113,7 +117,7 @@ export default function ChangelogEntry({ changelog, project, onDelete }: Changel
         if (trimmedLine.startsWith('### ')) {
           const headerContent = trimmedLine.substring(4).trim();
           return (
-            <h4 key={index} className="text-base font-semibold text-ink-dark mt-3 mb-1 font-cuneiform">
+            <h4 key={index} className="text-base font-semibold text-primary_green mt-3 mb-1 font-cuneiform">
               {headerContent}
             </h4>
           );
@@ -122,7 +126,7 @@ export default function ChangelogEntry({ changelog, project, onDelete }: Changel
         // Regular paragraph
         if (trimmedLine) {
           return (
-            <p key={index} className="text-ink-dark leading-relaxed mb-2">
+            <p key={index} className="text-primary_green leading-relaxed mb-2">
               {trimmedLine}
             </p>
           );
@@ -134,99 +138,71 @@ export default function ChangelogEntry({ changelog, project, onDelete }: Changel
   };
 
   return (
-    <div className="bg-clay-medium border-2 border-clay-dark font-cuneiform rounded-lg shadow-clay-outset p-6 mb-6">
+    <div className="bg-cream border-2 border-clay_brown font-cuneiform rounded-lg p-6 mb-6">
       {/* Cuneiform Inscription Header */}
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-clay-dark">
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-clay_brown">
         <div className="flex items-center space-x-4">
           {/* Ancient symbols */}
-          <div className="text-2xl text-terracotta-600">𒀭</div>
-          
+          <div className="text-2xl text-golden_brown">𒀭</div>
           {/* Version and Commit Range */}
           <div className="flex flex-col space-y-1">
             {changelog.version && (
-              <div className="text-sm font-bold text-ink-dark bg-clay-light px-3 py-1 rounded border border-clay-dark">
+              <div className="text-sm font-bold text-dark_brown">
                 Version {changelog.version}
               </div>
             )}
-            <div className="text-xs text-ink-medium font-mono bg-clay-light px-2 py-1 rounded border border-clay-dark">
-              {formatCommitCount(changelog.commit_hashes)}
-            </div>
+            {changelog.from_commit && changelog.to_commit && (
+              <div className="text-xs text-clay_brown font-mono">
+                {changelog.from_commit.substring(0, 7)}...{changelog.to_commit.substring(0, 7)}
+              </div>
+            )}
           </div>
-          
-          <div className="text-2xl text-terracotta-600">𒌋</div>
         </div>
-        
-        {/* Published Date and Actions */}
         <div className="flex items-center space-x-3">
-          <div className="text-sm text-ink-medium font-cuneiform">
-            {formatChangelogDate(changelog.published_at)}
-          </div>
-          
-          {/* Delete Button for Owners */}
+          {/* Status Badge */}
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+            changelog.status === 'published' 
+              ? 'bg-golden_brown text-cream' 
+              : 'bg-clay_brown text-cream'
+          }`}>
+            {changelog.status}
+          </span>
+          {/* Remove button - only show if user owns the GitHub repo */}
           {isOwner && (
-            <div className="relative">
-              {!showDeleteConfirm ? (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="px-3 py-1 text-sm text-ink-medium hover:text-red-600 hover:bg-red-50 rounded transition-colors font-cuneiform"
-                  title="Delete Changelog"
-                  disabled={isDeleting}
-                >
-                  remove
-                </button>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="p-2 text-accent_red hover:bg-accent_red hover:text-cream rounded-lg transition-colors duration-200 disabled:opacity-50"
+              title="Delete changelog"
+            >
+              {isDeleting ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
               ) : (
-                <div className="flex items-center space-x-2 bg-red-50 border border-red-200 rounded px-2 py-1">
-                  <span className="text-xs text-red-800 font-medium">Delete?</span>
-                  <button
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="text-xs bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded disabled:opacity-50"
-                  >
-                    {isDeleting ? 'Deleting...' : 'Yes'}
-                  </button>
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="text-xs bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded"
-                  >
-                    No
-                  </button>
-                </div>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
               )}
-            </div>
+            </button>
           )}
         </div>
       </div>
 
-      {/* Changelog Content with Markdown-like Rendering */}
-      <div className="prose prose-sm max-w-none mb-4">
-        <div className="text-ink-dark">
-          {renderMarkdownContent(changelog.summary_final)}
+      {/* Changelog Content */}
+      <div className="space-y-4">
+        {/* Creation Info */}
+        <div className="flex justify-between items-center text-xs text-clay_brown">
+          <span>Created {formatChangelogDate(changelog.created_at)}</span>
+          <span>Chronicle #{changelog.id.split('-')[0]}</span>
         </div>
-      </div>
 
-      {/* Status and Decorative Elements */}
-      <div className="mt-4 pt-4 border-t border-clay-dark">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            {/* Status Badge */}
-            <span className={`px-3 py-1 rounded text-xs font-medium font-cuneiform ${
-              changelog.status === 'published' 
-                ? 'bg-terracotta-100 text-terracotta-800 border border-terracotta-300'
-                : 'bg-stone-medium text-ink-medium border border-clay-dark'
-            }`}>
-              {changelog.status.charAt(0).toUpperCase() + changelog.status.slice(1)}
-            </span>
-            
-            {/* Ancient cuneiform decoration */}
-            <div className="text-lg text-terracotta-500">𒊹</div>
-          </div>
-          
-          {/* Decorative clay line */}
-          <div className="flex items-center space-x-1">
-            <div className="w-6 h-1 bg-gradient-to-r from-terracotta-400 to-terracotta-600 rounded-full"></div>
-            <div className="text-sm text-terracotta-500">𒈾</div>
-            <div className="w-6 h-1 bg-gradient-to-r from-terracotta-600 to-terracotta-400 rounded-full"></div>
-          </div>
+        {/* Content Sections */}
+        <div className="prose prose-sm max-w-none">
+          <div 
+            className="text-dark_brown font-sans leading-relaxed"
+            dangerouslySetInnerHTML={{ 
+              __html: changelog.summary_final.replace(/\n/g, '<br/>') 
+            }} 
+          />
         </div>
       </div>
     </div>
