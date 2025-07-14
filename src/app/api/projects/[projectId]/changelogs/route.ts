@@ -3,8 +3,18 @@ import { z } from 'zod';
 import connectToDatabase from '@/lib/mongodb';
 import { Changelog } from '@/models';
 
-// Validation schema for the projectId parameter
-const projectIdSchema = z.string().uuid('Invalid project ID format');
+// Validation schema for the projectId parameter (UUID or MongoDB ObjectId format)
+const projectIdSchema = z.string().refine(
+  (id) => {
+    // Accept both UUID format and MongoDB ObjectId format for backwards compatibility
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+    return uuidRegex.test(id) || objectIdRegex.test(id);
+  },
+  {
+    message: 'Invalid project ID format - must be a valid UUID or MongoDB ObjectId'
+  }
+);
 
 /**
  * Project Changelogs API Route

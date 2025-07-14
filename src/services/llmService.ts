@@ -30,51 +30,55 @@ function initializeGemini(): void {
  * Create a comprehensive prompt for changelog generation
  */
 function createChangelogPrompt(commits: CommitData[]): string {
-  const commitMessages = commits.map(commit => commit.message).join('\n');
+  const commitDetails = commits.map((commit, index) => 
+    `${index + 1}. ${commit.message} (${commit.sha.substring(0, 7)})`
+  ).join('\n');
   
-  return `You are an expert technical writer tasked with creating a professional changelog from commit messages. 
+  return `You are an expert technical writer tasked with creating a professional changelog from individual commit messages. Each commit should become its own changelog entry.
 
-COMMIT MESSAGES TO ANALYZE:
-${commitMessages}
+COMMITS TO PROCESS (${commits.length} total):
+${commitDetails}
 
 INSTRUCTIONS:
-- Generate a well-structured changelog in markdown format
-- Group changes into logical categories: Features, Bug Fixes, Improvements, Documentation, etc.
-- Use bullet points for each change
-- Focus on user-facing changes and significant technical improvements
-- Ignore minor changes like typos, formatting, or trivial refactoring unless they're part of a larger improvement
-- Ignore merge commits and version bumps
-- Write in present tense and be concise but descriptive
-- If multiple commits relate to the same feature, consolidate them into one bullet point
-- Prioritize features and bug fixes over minor changes
-- Include technical details only when they add value for developers
-- If no significant changes are found, return "No significant changes in this release."
+- Generate a changelog in markdown format with each commit as a separate entry
+- Create one bullet point for each commit (do not group or consolidate)
+- Categorize each commit into: Features, Bug Fixes, Improvements, Documentation, Chores, or Other
+- Clean up commit messages to be user-friendly and professional
+- Write in present tense and be descriptive
+- Skip commits that are clearly not user-facing (merge commits, version bumps, trivial fixes)
+- For each valid commit, rewrite the message to be clear and professional
+- Maintain the chronological order (most recent first)
 
 FORMAT EXAMPLE:
 ## Features
-- Added user authentication with OAuth2 integration
-- Implemented real-time notifications system
+- Add user authentication with OAuth2 integration
+- Implement real-time notifications system
 
 ## Bug Fixes  
-- Fixed memory leak in data processing pipeline
-- Resolved issue with file uploads timing out
+- Fix memory leak in data processing pipeline
+- Resolve issue with file uploads timing out
 
 ## Improvements
-- Enhanced performance of search functionality by 40%
-- Updated error handling with more descriptive messages
+- Enhance search functionality performance by 40%
+- Update error handling with more descriptive messages
 
 ## Documentation
-- Added comprehensive API documentation
-- Updated deployment guide with Docker instructions
+- Add comprehensive API documentation
+- Update deployment guide with Docker instructions
+
+## Chores
+- Update dependencies to latest versions
+- Refactor authentication module for better maintainability
 
 IMPORTANT GUIDELINES:
-- Do NOT include commit hashes or author names
-- Do NOT mention specific file names unless necessary for context
-- Do NOT include commits that only update dependencies unless it's a major version change
-- Do NOT include "WIP", "temp", or "debug" commits
-- Focus on the WHAT and WHY, not the HOW
-- Keep each bullet point to 1-2 lines maximum
-- Use action verbs (Added, Fixed, Improved, Updated, etc.)
+- Do NOT include commit hashes in the final output
+- Do NOT include author names
+- Transform technical commit messages into user-friendly descriptions
+- Skip commits with messages like "WIP", "temp", "debug", "fix typo", etc.
+- If a commit message is unclear, infer the intent based on common patterns
+- Use action verbs (Add, Fix, Improve, Update, Remove, etc.)
+- Keep each bullet point concise but descriptive
+- If fewer than 3 meaningful commits exist, still list them individually
 
 Generate the changelog now:`;
 }

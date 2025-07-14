@@ -7,6 +7,7 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -28,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased min-h-screen bg-clay-light text-ink-dark flex flex-col`}>
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans antialiased min-h-screen bg-clay-light text-ink-dark flex flex-col">
         {/* Header Navigation */}
         <header className="bg-gradient-to-r from-amber-800 to-orange-900 shadow-lg border-b-4 border-amber-700">
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

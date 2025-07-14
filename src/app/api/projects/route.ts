@@ -15,9 +15,25 @@ export async function GET() {
     await connectToDatabase();
 
     // Fetch all projects, sorted by updated_at descending (most recently updated first)
-    const projects = await Project.find({})
+    const rawProjects = await Project.find({})
       .sort({ updated_at: -1 })
       .lean(); // Use lean() for better performance when we don't need Mongoose document features
+
+    // Transform projects to ensure consistent ID field usage
+    // Since .lean() doesn't apply schema transforms, we manually clean up the data
+    const projects = rawProjects.map((project: any) => {
+      // Ensure we have the custom id field, fallback to _id if needed
+      const cleanProject = {
+        ...project,
+        id: project.id || project._id?.toString()
+      };
+      
+      // Remove MongoDB fields for consistency
+      if ('_id' in cleanProject) delete cleanProject._id;
+      if ('__v' in cleanProject) delete cleanProject.__v;
+      
+      return cleanProject;
+    });
 
     // Return success response with projects list
     return NextResponse.json(

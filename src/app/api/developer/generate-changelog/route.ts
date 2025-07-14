@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { z } from 'zod';
 import Project from '../../../../models/Project';
 import Changelog from '../../../../models/Changelog';
-import { fetchCommitsFromRepo, CommitData } from '../../../../services/gitService';
+import { fetchRecentCommitsByCount, CommitData } from '../../../../services/gitService';
 import { generateSummary } from '../../../../services/llmService';
 
 // Request validation schema
@@ -18,13 +18,16 @@ const GenerateChangelogRequest = z.object({
     {
       message: 'Invalid GitHub repository URL format'
     }
-  )
+  ),
+  commit_count: z.number().int().min(1).max(100).optional().default(10)
 });
 
 // Response type
 interface GenerateChangelogResponse {
+  success: boolean;
   changelog_id: string;
-  summary_ai: string;
+  ai_summary: string;
+  summary_final: string;
   version: string;
   project_id: string;
   commit_count: number;
@@ -49,32 +52,7 @@ async function connectToDatabase(): Promise<void> {
   });
 }
 
-/**
- * Determine the commit date range for fetching commits
- */
-async function getCommitDateRange(projectId: string): Promise<{ sinceDate: Date; untilDate: Date }> {
-  const untilDate = new Date();
-  
-  // Find the most recent published changelog for this project
-  const lastPublishedChangelog = await Changelog.findOne({
-    project_id: projectId,
-    status: 'published',
-    published_at: { $exists: true }
-  }).sort({ published_at: -1 });
 
-  let sinceDate: Date;
-  
-  if (lastPublishedChangelog && lastPublishedChangelog.published_at) {
-    // Start from the last published changelog date
-    sinceDate = new Date(lastPublishedChangelog.published_at);
-  } else {
-    // Default to 30 days back as specified in requirements
-    sinceDate = new Date();
-    sinceDate.setDate(sinceDate.getDate() - 30);
-  }
-
-  return { sinceDate, untilDate };
-}
 
 /**
  * Generate a date-based version string
@@ -97,7 +75,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // Parse and validate request body
     const body = await request.json();
-    const { project_name, repo_url } = GenerateChangelogRequest.parse(body);
+    const { project_name, repo_url, commit_count } = GenerateChangelogRequest.parse(body);
 
     // Normalize repo URL (remove trailing slash)
     const normalizedRepoUrl = repo_url.replace(/\/$/, '');
@@ -122,19 +100,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       console.log(`Created new project: ${project.name} (${project.id})`);
     }
 
-    // Determine commit date range
-    const { sinceDate, untilDate } = await getCommitDateRange(project.id);
-    
-    console.log(`Fetching commits from ${sinceDate.toISOString()} to ${untilDate.toISOString()}`);
+    console.log(`Fetching ${commit_count} most recent commits`);
 
-    // Fetch commits from repository
-    const commits = await fetchCommitsFromRepo(normalizedRepoUrl, sinceDate, untilDate);
+    // Fetch most recent commits from repository
+    const commits = await fetchRecentCommitsByCount(normalizedRepoUrl, commit_count);
     
     if (commits.length === 0) {
       return NextResponse.json(
         { 
-          error: 'No commits found in the specified date range',
-          details: `No commits found between ${sinceDate.toDateString()} and ${untilDate.toDateString()}`
+          error: 'No commits found in the repository',
+          details: `No commits found in the repository. Please ensure the repository exists and is accessible.`
         },
         { status: 400 }
       );
@@ -169,8 +144,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // Return successful response
     const response: GenerateChangelogResponse = {
+      success: true,
       changelog_id: changelog.id,
-      summary_ai: summaryAi,
+      ai_summary: summaryAi,
+      summary_final: summaryAi, // Provide both for frontend compatibility
       version: version,
       project_id: project.id,
       commit_count: commits.length

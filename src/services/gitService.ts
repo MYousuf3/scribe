@@ -277,6 +277,166 @@ async function _fetchGitLabCommits(
 }
 
 /**
+ * Fetch the most recent N commits from GitHub
+ */
+async function _fetchGitHubRecentCommits(
+  owner: string,
+  repo: string,
+  commitCount: number
+): Promise<CommitData[]> {
+  const commits: CommitData[] = [];
+  const baseUrl = 'https://api.github.com';
+  let page = 1;
+  const perPage = Math.min(commitCount, 100); // GitHub's max per page
+  
+  // Get GitHub PAT from environment
+  const githubPat = process.env.GITHUB_PAT;
+  if (!githubPat) {
+    throw new Error('GITHUB_PAT environment variable is required for GitHub API access');
+  }
+  
+  const headers = {
+    'Authorization': `Bearer ${githubPat}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'Scribe-Changelog-Generator'
+  };
+  
+  try {
+    while (commits.length < commitCount) {
+      const response: AxiosResponse<GitHubCommit[]> = await axios.get(
+        `${baseUrl}/repos/${owner}/${repo}/commits`,
+        {
+          headers,
+          params: {
+            page,
+            per_page: perPage
+          }
+        }
+      );
+      
+      const pageCommits = response.data;
+      
+      // Break if no more commits
+      if (pageCommits.length === 0) {
+        break;
+      }
+      
+      // Transform GitHub commits to our standard format
+      pageCommits.forEach(commit => {
+        if (commits.length < commitCount) {
+          commits.push({
+            sha: commit.sha,
+            message: commit.commit.message,
+            author: {
+              name: commit.commit.author.name,
+              email: commit.commit.author.email
+            },
+            date: commit.commit.author.date
+          });
+        }
+      });
+      
+      page++;
+    }
+    
+    return commits.slice(0, commitCount); // Ensure exact count
+    
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error('Repository not found or access denied');
+      } else if (error.response?.status === 403) {
+        throw new Error('GitHub API rate limit exceeded or insufficient permissions');
+      } else if (error.response?.status === 401) {
+        throw new Error('Invalid GitHub token or unauthorized access');
+      }
+    }
+    
+    throw new Error(`GitHub API error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Fetch the most recent N commits from GitLab
+ */
+async function _fetchGitLabRecentCommits(
+  owner: string,
+  repo: string,
+  commitCount: number,
+  host: string = 'gitlab.com'
+): Promise<CommitData[]> {
+  const commits: CommitData[] = [];
+  const baseUrl = host === 'gitlab.com' ? 'https://gitlab.com/api/v4' : `https://${host}/api/v4`;
+  let page = 1;
+  const perPage = Math.min(commitCount, 100); // GitLab's max per page
+  
+  // Get GitLab PAT from environment (optional for public repos)
+  const gitlabPat = process.env.GITLAB_PAT;
+  
+  const headers: Record<string, string> = {
+    'User-Agent': 'Scribe-Changelog-Generator'
+  };
+  
+  if (gitlabPat) {
+    headers['Authorization'] = `Bearer ${gitlabPat}`;
+  }
+  
+  try {
+    while (commits.length < commitCount) {
+      const response: AxiosResponse<GitLabCommit[]> = await axios.get(
+        `${baseUrl}/projects/${encodeURIComponent(`${owner}/${repo}`)}/repository/commits`,
+        {
+          headers,
+          params: {
+            page,
+            per_page: perPage
+          }
+        }
+      );
+      
+      const pageCommits = response.data;
+      
+      // Break if no more commits
+      if (pageCommits.length === 0) {
+        break;
+      }
+      
+      // Transform GitLab commits to our standard format
+      pageCommits.forEach(commit => {
+        if (commits.length < commitCount) {
+          commits.push({
+            sha: commit.id,
+            message: commit.message,
+            author: {
+              name: commit.author_name,
+              email: commit.author_email
+            },
+            date: commit.created_at
+          });
+        }
+      });
+      
+      page++;
+    }
+    
+    return commits.slice(0, commitCount); // Ensure exact count
+    
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error('Repository not found or access denied');
+      } else if (error.response?.status === 403) {
+        throw new Error('GitLab API rate limit exceeded or insufficient permissions');
+      } else if (error.response?.status === 401) {
+        throw new Error('Invalid GitLab token or unauthorized access');
+      }
+    }
+    
+    throw new Error(`GitLab API error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
  * Fetch commits from a repository (GitHub or GitLab)
  * 
  * @param repoUrl - Repository URL (HTTPS or SSH format)
@@ -324,6 +484,51 @@ export async function fetchCommitsFromRepo(
     // Re-throw with additional context
     if (error instanceof Error) {
       throw new Error(`Failed to fetch commits from ${repoUrl}: ${error.message}`);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Fetch the most recent N commits from any supported repository
+ */
+export async function fetchRecentCommitsByCount(
+  repoUrl: string,
+  commitCount: number = 10
+): Promise<CommitData[]> {
+  try {
+    // Validate commit count
+    if (commitCount <= 0 || commitCount > 1000) {
+      throw new Error('Commit count must be between 1 and 1000');
+    }
+    
+    // Parse the repository URL to determine provider and extract repo info
+    const repoInfo = parseRepoUrl(repoUrl);
+    
+    // Fetch commits based on provider
+    switch (repoInfo.provider) {
+      case 'github':
+        return await _fetchGitHubRecentCommits(
+          repoInfo.owner,
+          repoInfo.repo,
+          commitCount
+        );
+        
+      case 'gitlab':
+        return await _fetchGitLabRecentCommits(
+          repoInfo.owner,
+          repoInfo.repo,
+          commitCount,
+          repoInfo.host
+        );
+        
+      default:
+        throw new Error(`Unsupported repository provider: ${repoInfo.provider}`);
+    }
+  } catch (error) {
+    // Re-throw with additional context
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch recent commits from ${repoUrl}: ${error.message}`);
     }
     throw error;
   }

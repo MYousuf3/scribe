@@ -5,7 +5,7 @@ import { Changelog, Project } from '@/models';
 
 // Validation schema for the request body
 const publishChangelogSchema = z.object({
-  changelog_id: z.string().uuid('Invalid changelog ID format'),
+  changelog_id: z.string().uuid('Invalid changelog ID format - must be a valid UUID'),
   summary_final: z.string().min(1, 'Final summary cannot be empty').max(10000, 'Summary too long'),
 });
 
