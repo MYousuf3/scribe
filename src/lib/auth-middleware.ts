@@ -33,60 +33,11 @@ export type AuthResult = AuthContext | UnauthenticatedContext;
  * Get authentication context from request
  */
 export async function getAuthContext(req: NextRequest): Promise<AuthResult> {
-  console.log('🔥 AUTH MIDDLEWARE: Function called!');
-  console.log('🔥 AUTH MIDDLEWARE: Request URL:', req.url);
-  
   try {
-    console.log('🔍 Auth Debug: Getting session from request');
-    console.log('🔍 Auth Debug: Request URL:', req.url);
-    console.log('🔍 Auth Debug: Request headers cookies:', req.headers.get('cookie'));
-    
-    // Try the simpler approach first - just call getServerSession without context
-    // This should work in most cases for Next.js App Router
-    let session = await getServerSession(authOptions) as any;
-    
-    console.log('🔍 Auth Debug: Initial session result:', JSON.stringify(session, null, 2));
-    
-    // If that fails, try with manual cookie parsing
-    if (!session) {
-      console.log('🔍 Auth Debug: No session found, trying manual cookie approach');
-      const cookieHeader = req.headers.get('cookie');
-      console.log('🔍 Auth Debug: Cookie header:', cookieHeader);
-      
-      if (cookieHeader) {
-        // Try to create a more compatible request object
-        const mockRequest = {
-          headers: {
-            cookie: cookieHeader,
-            ...Object.fromEntries(req.headers.entries())
-          },
-          cookies: cookieHeader,
-        };
-        
-        const mockResponse = {
-          headers: new Headers(),
-          setHeader: () => {},
-          getHeader: () => undefined,
-        };
-        
-        session = await getServerSession({
-          req: mockRequest as any,
-          res: mockResponse as any,
-          ...authOptions
-        }) as any;
-        
-        console.log('🔍 Auth Debug: Session with mock context:', JSON.stringify(session, null, 2));
-      }
-    }
-
-    console.log('🔍 Auth Debug: Session result:', JSON.stringify(session, null, 2));
+    // Get session using NextAuth
+    const session = await getServerSession(authOptions) as any;
     
     if (!session?.user?.githubId || !session.accessToken) {
-      console.log('🔍 Auth Debug: No session or missing required fields');
-      console.log('🔍 Auth Debug: Has user?', !!session?.user);
-      console.log('🔍 Auth Debug: Has githubId?', !!session?.user?.githubId);
-      console.log('🔍 Auth Debug: Has accessToken?', !!session?.accessToken);
-      console.log('🔥 AUTH MIDDLEWARE: Returning unauthenticated');
       return { user: null, isAuthenticated: false };
     }
 
