@@ -2,7 +2,7 @@ import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 import { CommitData } from './gitService';
 
 // Configuration for the LLM service
-const MODEL_NAME = 'gemini-1.5-flash';
+const MODEL_NAME = 'gemini-1.5-pro';
 const GENERATION_TIMEOUT = 30000; // Increased to 30 seconds for better reliability
 
 // Initialize the Google Generative AI client
