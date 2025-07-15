@@ -86,7 +86,7 @@ export default function ProjectListPage() {
             Generate Changelog
           </a>
           <a
-            href="https://github.com"
+            href="https://github.com/MYousuf3/scribe"
             className="inline-flex items-center px-8 py-4 bg-transparent border-2 border-dark_brown text-dark_brown text-lg font-semibold rounded-lg hover:bg-dark_brown hover:text-cream transition-all duration-300 transform hover:scale-105"
           >
             <Github className="mr-2 h-5 w-5" />
@@ -163,23 +163,7 @@ export default function ProjectListPage() {
             )}
           </motion.div>
 
-          {/* Call to Action */}
-          {!loading && !error && filteredProjects.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.0 }}
-              className="text-center mt-16"
-            >
-              <a
-                href="/developer"
-                className="inline-flex items-center px-8 py-4 bg-golden_brown text-cream text-lg font-semibold rounded-lg hover:bg-accent_red transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                <Sparkles className="mr-2 h-5 w-5" />
-                Create New Chronicle
-              </a>
-            </motion.div>
-          )}
+
         </div>
       </section>
 
