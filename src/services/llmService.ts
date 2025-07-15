@@ -34,38 +34,43 @@ function createChangelogPrompt(commits: CommitData[]): string {
     `${index + 1}. ${commit.message}`
   ).join('\n');
   
-  return `Create a professional changelog from these commits. Start with ONE main title (# header) summarizing all changes.
+  return `Generate a technical changelog from these commit messages. Create ONE main title (# header) summarizing the release scope.
 
 COMMITS (${commits.length} total):
 ${commitDetails}
 
 FORMAT:
-# [Main Title]
+# [Release Title]
 
 ## Features
-- [Feature description]
+- [Feature implementation with technical details]
 
 ## Bug Fixes  
-- [Bug fix description]
+- [Bug resolution with root cause and solution]
 
 ## Improvements
-- [Improvement description]
+- [Performance/architectural enhancements with metrics]
 
 ## Documentation
-- [Documentation changes]
+- [Technical documentation updates]
 
 ## Chores
-- [Maintenance changes]
+- [Maintenance, dependencies, refactoring]
 
-RULES:
-- Use markdown format with categories shown above
-- Create clear, user-friendly descriptions (5-8 words each)
-- Skip trivial commits (merge, typo, debug, WIP)
-- Use present tense action verbs
-- One main title that captures the release theme
-- Group similar commits under appropriate categories
+TECHNICAL REQUIREMENTS:
+- Write for software engineers and technical stakeholders
+- Include implementation details, architectural changes, and performance impacts
+- Use precise technical terminology (APIs, algorithms, frameworks, patterns)
+- Describe code changes, system modifications, and infrastructure updates
+- Mention specific technologies, libraries, and methodologies when relevant
+- Focus on technical impact: performance gains, security improvements, scalability
+- Include version numbers, dependency updates, and configuration changes
+- Explain technical debt reduction and architectural improvements
+- Each description should be 8-12 words with technical depth
+- Skip trivial commits (merge, typo, debug, WIP, version bumps)
+- Use technical action verbs (implement, optimize, refactor, migrate, configure)
 
-Generate the changelog:`;
+Generate comprehensive technical changelog:`;
 }
 
 /**
