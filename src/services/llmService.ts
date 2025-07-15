@@ -3,7 +3,7 @@ import { CommitData } from './gitService';
 
 // Configuration for the LLM service
 const MODEL_NAME = 'gemini-1.5-flash';
-const GENERATION_TIMEOUT = 15000; // 15 seconds as specified in requirements
+const GENERATION_TIMEOUT = 30000; // Increased to 30 seconds for better reliability
 
 // Initialize the Google Generative AI client
 let genAI: GoogleGenerativeAI | null = null;
@@ -27,71 +27,45 @@ function initializeGemini(): void {
 }
 
 /**
- * Create a comprehensive prompt for changelog generation
+ * Create a concise prompt for changelog generation
  */
 function createChangelogPrompt(commits: CommitData[]): string {
   const commitDetails = commits.map((commit, index) => 
-    `${index + 1}. ${commit.message} (${commit.sha.substring(0, 7)})`
+    `${index + 1}. ${commit.message}`
   ).join('\n');
   
-  return `You are an expert technical writer tasked with creating a professional changelog from individual commit messages. Create a changelog with ONE main descriptive title that summarizes all the changes.
+  return `Create a professional changelog from these commits. Start with ONE main title (# header) summarizing all changes.
 
-COMMITS TO PROCESS (${commits.length} total):
+COMMITS (${commits.length} total):
 ${commitDetails}
 
-INSTRUCTIONS:
-- Start with a single main title (using # header) that summarizes the overall theme of this release
-- Generate a changelog in markdown format with each commit as a separate entry
-- Create one or two bullets point for each commit (do not group or consolidate)
-- Categorize each commit into: Features, Bug Fixes, Improvements, Documentation, Chores, or Other
-- Clean up commit messages to be user-friendly and professional
-- Write in present tense and be descriptive and detailed
-- Skip commits that are clearly not user-facing (merge commits, version bumps, trivial fixes)
-- For each valid commit, rewrite the message to be comprehensive, detailed, and informative
-- Provide context about what was changed, why it matters, and how it impacts the user experience
-- Use technical terminology appropriately but keep it accessible
-- Include implementation details when relevant to understanding the impact
-- Maintain the chronological order (most recent first)
-- Make each description at least 10-15 words long with rich detail
-
-FORMAT EXAMPLE:
-# Authentication and User Experience Improvements
+FORMAT:
+# [Main Title]
 
 ## Features
-- Implement comprehensive user authentication system with OAuth2 integration, supporting multiple social login providers including Google, GitHub, and Microsoft accounts for seamless user onboarding
-- Introduce real-time notification system with WebSocket connections, enabling instant delivery of system updates, user mentions, and activity alerts with customizable notification preferences
+- [Feature description]
 
 ## Bug Fixes  
-- Resolve critical memory leak in data processing pipeline that was causing application slowdowns during high-traffic periods, improving overall system stability and performance by 60%
-- Fix intermittent timeout issues in file upload functionality that were preventing users from uploading large files, now supporting files up to 500MB with improved error handling and progress tracking
+- [Bug fix description]
 
 ## Improvements
-- Enhance search functionality performance by implementing advanced indexing algorithms and caching mechanisms, reducing average search response time from 2.3 seconds to 0.8 seconds across all data types
-- Upgrade error handling system with comprehensive error categorization, detailed user-friendly error messages, and automatic retry mechanisms for transient failures
+- [Improvement description]
 
 ## Documentation
-- Create extensive API documentation with interactive examples, detailed parameter descriptions, and comprehensive usage scenarios for all endpoints using OpenAPI 3.0 specification
-- Develop comprehensive deployment guide covering Docker containerization, Kubernetes orchestration, environment configuration, and production best practices for scalable deployment
+- [Documentation changes]
 
 ## Chores
-- Update all project dependencies to their latest stable versions, addressing 15 security vulnerabilities and improving overall application security posture while maintaining backward compatibility
-- Refactor authentication module architecture to follow modern design patterns, improving code maintainability, reducing technical debt, and enabling easier future feature additions
+- [Maintenance changes]
 
-IMPORTANT GUIDELINES:
-- Do NOT include commit hashes in the final output
-- Do NOT include author names
-- Transform technical commit messages into detailed, user-friendly descriptions
-- Skip commits with messages like "WIP", "temp", "debug", "fix typo", etc.
-- If a commit message is unclear, infer the intent based on common patterns and provide comprehensive context
-- Use action verbs (Add, Fix, Improve, Update, Remove, etc.)
-- Make each bullet point detailed and informative, explaining the what, why, and impact
-- Create ONE main title that captures the essence of all changes in this release
-- The main title should be descriptive and professional (e.g. "Performance Optimizations and Bug Fixes", "New Authentication Features", "UI/UX Improvements")
-- If fewer than 3 meaningful commits exist, still list them individually with full detail
-- Each description should provide enough context for users to understand the significance of the change
-- Include performance metrics, user benefits, and technical improvements where applicable
+RULES:
+- Use markdown format with categories shown above
+- Create clear, user-friendly descriptions (5-8 words each)
+- Skip trivial commits (merge, typo, debug, WIP)
+- Use present tense action verbs
+- One main title that captures the release theme
+- Group similar commits under appropriate categories
 
-Generate the changelog now:`;
+Generate the changelog:`;
 }
 
 /**
