@@ -119,12 +119,7 @@ ProjectSchema.pre(['updateOne', 'findOneAndUpdate'], function(next) {
   next();
 });
 
-// Indexes for performance optimization
-ProjectSchema.index({ name: 1 }); // For name-based searches
-ProjectSchema.index({ repo_url: 1 }, { unique: true }); // For duplicate checking
-ProjectSchema.index({ owner_id: 1 }, { sparse: true }); // For ownership queries
-ProjectSchema.index({ github_repo_owner: 1 }); // For GitHub user queries
-ProjectSchema.index({ github_repo_name: 1 }); // For repository name queries
+// Only keep indexes that are NOT already defined in schema fields
 ProjectSchema.index({ created_at: -1 }); // For sorting by creation date
 ProjectSchema.index({ updated_at: -1 }); // For sorting by update date
 

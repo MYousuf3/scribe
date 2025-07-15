@@ -126,15 +126,11 @@ const ChangelogSchema = new Schema<IChangelog>({
   }
 });
 
-// Indexes for performance optimization
-ChangelogSchema.index({ project_id: 1 }); // For project-changelog relationships
-ChangelogSchema.index({ created_by: 1 }, { sparse: true }); // For user-changelog relationships
+// Only keep indexes that are NOT already defined in schema fields or are compound indexes
 ChangelogSchema.index({ published_at: -1 }); // For date-based sorting
-ChangelogSchema.index({ status: 1 }); // For filtering by status
-ChangelogSchema.index({ project_id: 1, status: 1 }); // Compound index for common queries
+ChangelogSchema.index({ project_id: 1, status: 1 }); // Compound index for common queries  
 ChangelogSchema.index({ project_id: 1, published_at: -1 }); // For project changelog history
 ChangelogSchema.index({ created_by: 1, status: 1 }, { sparse: true }); // For user's changelogs by status
-ChangelogSchema.index({ version: 1 }); // For version-based lookups
 
 // Static methods for the model
 ChangelogSchema.statics.findByProjectId = function(project_id: string, status?: 'draft' | 'published') {

@@ -12,13 +12,12 @@ interface Changelog {
   created_by?: string;
   summary_final: string;
   status: string;
-  published_at: Date;
-  generated_at: Date;
+  published_at: string; // ISO string from API
+  generated_at: string; // ISO string from API
   commit_hashes: string[];
   version: string;
   from_commit?: string;
   to_commit?: string;
-  created_at: Date;
   content: string;
 }
 
@@ -30,8 +29,8 @@ interface Project {
   repository_url: string;
   github_repo_owner?: string;
   github_repo_name?: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string; // ISO string from API
+  updated_at: string; // ISO string from API
 }
 
 interface ChangelogEntryProps {
@@ -362,7 +361,7 @@ export default function ChangelogEntry({ changelog, project, onDelete }: Changel
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
               </svg>
-              <span className="font-medium">Created {formatChangelogDate(changelog.created_at)}</span>
+              <span className="font-medium">Created {formatChangelogDate(changelog.generated_at)}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-clay_brown">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

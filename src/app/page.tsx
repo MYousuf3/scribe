@@ -12,8 +12,8 @@ interface Project {
   name: string;
   description?: string;
   repository_url: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string; // ISO string from API
+  updated_at: string; // ISO string from API
 }
 
 export default function ProjectListPage() {

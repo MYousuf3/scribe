@@ -9,8 +9,8 @@ interface Project {
   repository_url: string;
   github_repo_owner?: string;
   github_repo_name?: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string; // ISO string from API
+  updated_at: string; // ISO string from API
 }
 
 interface ProjectCardProps {

@@ -14,13 +14,13 @@ interface Changelog {
   created_by?: string;
   summary_final: string;
   status: string;
-  published_at: Date;
-  generated_at: Date;
+  published_at: string; // ISO string from API
+  generated_at: string; // ISO string from API
   commit_hashes: string[];
   version: string;
   from_commit?: string;
   to_commit?: string;
-  created_at: Date;
+  created_at: string; // ISO string from API
   content: string;
 }
 
@@ -32,8 +32,8 @@ interface Project {
   repository_url: string;
   github_repo_owner?: string;
   github_repo_name?: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string; // ISO string from API
+  updated_at: string; // ISO string from API
 }
 
 export default function ProjectChangelogPage() {

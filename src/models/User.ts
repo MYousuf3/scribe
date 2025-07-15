@@ -89,11 +89,7 @@ userSchema.statics.findOrCreateFromGitHub = async function(githubUser: any, acce
   return user;
 };
 
-// Ensure indexes are created
-userSchema.index({ github_id: 1 });
-userSchema.index({ username: 1 });
-userSchema.index({ email: 1 }, { sparse: true });
-
+// User model
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 
 export default User; 
